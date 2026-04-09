@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Star, ShieldCheck, Truck, CheckCircle2, ChevronRight, ShoppingCart, Minus, Plus, ArrowRight } from 'lucide-react';
 import Navbar from '../components/Navbar';
-import ShopHeader from '../components/ShopHeader';
+// import ShopHeader from '../components/ShopHeader';
 import Footer from '../components/Footer';
 import { productsData } from '../data/shop';
 
@@ -39,7 +39,7 @@ const ProductDetails = () => {
     return (
         <div className="bg-[#0a0d0a] min-h-screen text-white font-sans selection:bg-[#b0f020] selection:text-black pt-24 text-left">
             <Navbar />
-            <ShopHeader />
+            {/* <ShopHeader /> */}
 
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
