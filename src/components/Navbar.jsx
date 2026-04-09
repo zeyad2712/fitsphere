@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Activity } from 'lucide-react';
+import { Menu, X, Activity, Heart, ShoppingCart } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Navbar = () => {
@@ -35,8 +35,9 @@ const Navbar = () => {
           <Link to="/trainers" className="hover:text-[#b0f020] transition-colors">Trainers</Link>
           <a href="#aicoach" className="hover:text-[#b0f020] transition-colors">AI Coach</a>
           <Link to="/shop" className="hover:text-[#b0f020] transition-colors">Shop</Link>
-          <Link to="/wishlist" className="hover:text-[#b0f020] transition-colors">Wishlist</Link>
-          <Link to="/cart" className="hover:text-[#b0f020] transition-colors">Cart</Link>
+          <Link to="/videos" className="hover:text-[#b0f020] transition-colors">Videos Library</Link>
+          <Link to="/wishlist" className="hover:text-[#b0f020] transition-colors"><Heart size={18} /></Link>
+          <Link to="/cart" className="hover:text-[#b0f020] transition-colors"><ShoppingCart size={18} /></Link>
         </div>
 
         {/* Auth Actions */}
@@ -69,8 +70,9 @@ const Navbar = () => {
           <Link to="/trainers" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Trainers</Link>
           <a href="#aicoach" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>AI Coach</a>
           <Link to="/shop" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Shop</Link>
-          <Link to="/wishlist" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Wishlist</Link>
-          <Link to="/cart" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Cart</Link>
+          <Link to="/videos" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Videos Library</Link>
+          <Link to="/wishlist" className="text-gray-300 hover:text-[#b0f020] p-2 flex gap-2" onClick={() => setMobileMenuOpen(false)}><Heart size={18} />Wishlist</Link>
+          <Link to="/cart" className="text-gray-300 hover:text-[#b0f020] p-2 flex gap-2" onClick={() => setMobileMenuOpen(false)}><ShoppingCart size={18} />Cart</Link>
           <div className="flex flex-col gap-2 pt-4 border-t border-[#2a2f2a]">
             <Link to="/login" className="w-full text-center py-2 text-white hover:text-[#b0f020] font-medium" onClick={() => setMobileMenuOpen(false)}>Log in</Link>
             <Link to="/signup" className="w-full text-center py-2 bg-[#b0f020] text-[#0f120f] rounded-lg font-bold" onClick={() => setMobileMenuOpen(false)}>Sign up</Link>
