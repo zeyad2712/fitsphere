@@ -11,6 +11,11 @@ const ProductDetails = lazy(() => import('./pages/ProductDetails'));
 const GymDetails = lazy(() => import('./pages/GymDetails'));
 const SignUp = lazy(() => import('./pages/Auth/SignUp'));
 const Login = lazy(() => import('./pages/Auth/Login'));
+// const VideoLibrary = lazy(() => import('./pages/VideoLibrary'));
+const VideoDetails = lazy(() => import('./pages/VideoDetails'));
+const OnBoardingVideos = lazy(() => import('./pages/OnBoardingVideos'));
+const WorkoutVideos = lazy(() => import('./pages/WorkoutVideos'));
+const RecoveryVideos = lazy(() => import('./pages/RecoveryVideos'));
 
 // Loading component
 const PageLoader = () => (
@@ -31,6 +36,11 @@ const App = () => {
                     <Route path="/shop" element={<Shop />} />
                     <Route path="/product/:id" element={<ProductDetails />} />
                     <Route path="/gym/:id" element={<GymDetails />} />
+                    {/* <Route path="/videos" element={<VideoLibrary />} /> */}
+                    <Route path="/video/:id" element={<VideoDetails />} />
+                    <Route path="/onboarding-videos" element={<OnBoardingVideos />} />
+                    <Route path="/workout-videos" element={<WorkoutVideos />} />
+                    <Route path="/recovery-videos" element={<RecoveryVideos />} />
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/login" element={<Login />} />
                 </Routes>

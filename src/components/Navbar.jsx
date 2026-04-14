@@ -35,7 +35,7 @@ const Navbar = () => {
           <Link to="/trainers" className="hover:text-[#b0f020] transition-colors">Trainers</Link>
           <a href="#aicoach" className="hover:text-[#b0f020] transition-colors">AI Coach</a>
           <Link to="/shop" className="hover:text-[#b0f020] transition-colors">Shop</Link>
-          <Link to="/videos" className="hover:text-[#b0f020] transition-colors">Videos Library</Link>
+          <Link to="/onboarding-videos" className="hover:text-[#b0f020] transition-colors">Videos Library</Link>
           <Link to="/wishlist" className="hover:text-[#b0f020] transition-colors"><Heart size={18} /></Link>
           <Link to="/cart" className="hover:text-[#b0f020] transition-colors"><ShoppingCart size={18} /></Link>
         </div>
@@ -70,7 +70,7 @@ const Navbar = () => {
           <Link to="/trainers" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Trainers</Link>
           <a href="#aicoach" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>AI Coach</a>
           <Link to="/shop" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Shop</Link>
-          <Link to="/videos" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Videos Library</Link>
+          <Link to="/onboarding-videos" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Videos Library</Link>
           <Link to="/wishlist" className="text-gray-300 hover:text-[#b0f020] p-2 flex gap-2" onClick={() => setMobileMenuOpen(false)}><Heart size={18} />Wishlist</Link>
           <Link to="/cart" className="text-gray-300 hover:text-[#b0f020] p-2 flex gap-2" onClick={() => setMobileMenuOpen(false)}><ShoppingCart size={18} />Cart</Link>
           <div className="flex flex-col gap-2 pt-4 border-t border-[#2a2f2a]">
