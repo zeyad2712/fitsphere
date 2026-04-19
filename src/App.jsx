@@ -16,6 +16,10 @@ const VideoDetails = lazy(() => import('./pages/VideoDetails'));
 const OnBoardingVideos = lazy(() => import('./pages/OnBoardingVideos'));
 const WorkoutVideos = lazy(() => import('./pages/WorkoutVideos'));
 const RecoveryVideos = lazy(() => import('./pages/RecoveryVideos'));
+const AboutUs = lazy(() => import('./pages/AboutUs'));
+const ContactUs = lazy(() => import('./pages/ContactUs'));
+const AiCoach = lazy(() => import('./pages/AiCoach'));
+const Profile = lazy(() => import('./pages/Profile/Profile'));
 
 // Loading component
 const PageLoader = () => (
@@ -43,6 +47,10 @@ const App = () => {
                     <Route path="/recovery-videos" element={<RecoveryVideos />} />
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/about" element={<AboutUs />} />
+                    <Route path="/contact" element={<ContactUs />} />
+                    <Route path="/ai-coach" element={<AiCoach />} />
+                    <Route path="/profile" element={<Profile />} />
                 </Routes>
             </Suspense>
         </Router>
