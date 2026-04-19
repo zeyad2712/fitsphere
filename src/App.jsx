@@ -19,7 +19,7 @@ const RecoveryVideos = lazy(() => import('./pages/RecoveryVideos'));
 const AboutUs = lazy(() => import('./pages/AboutUs'));
 const ContactUs = lazy(() => import('./pages/ContactUs'));
 const AiCoach = lazy(() => import('./pages/AiCoach'));
-const Profile = lazy(() => import('./pages/Profile/Profile'));
+const Profile = lazy(() => import('./pages/Profile'));
 
 // Loading component
 const PageLoader = () => (

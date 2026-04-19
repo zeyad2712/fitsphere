@@ -19,8 +19,8 @@ import {
     Edit3,
     LineChart
 } from 'lucide-react';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState('personal');
