@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dumbbell, User, Mail, Lock, Target, ArrowRight, ChevronDown, ArrowLeft } from 'lucide-react';
+import { Dumbbell, User, Mail, Lock, Target, ArrowRight, ChevronDown, ArrowLeft, Calendar, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import '../css/Auth.css';
 
@@ -47,12 +47,13 @@ const SignUp = () => {
                         Back to Home
                     </Link>
 
-                    <div className="auth-header" style={{ marginBottom: '2rem' }}>
+                    <div className="auth-header">
                         <h2>Create an account</h2>
                         <p>Start your fitness journey with FitSphere today.</p>
                     </div>
 
                     <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+                        {/* Full Name */}
                         <div className="form-group">
                             <label>Full Name</label>
                             <div className="input-wrapper">
@@ -61,6 +62,26 @@ const SignUp = () => {
                             </div>
                         </div>
 
+                        {/* Date of Birth & Phone Number */}
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Date of Birth</label>
+                                <div className="input-wrapper">
+                                    <Calendar size={18} className="input-icon" />
+                                    <input type="date" className="form-input" />
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Phone Number</label>
+                                <div className="input-wrapper">
+                                    <Phone size={18} className="input-icon" />
+                                    <input type="tel" placeholder="+1 (555) 000-0000" className="form-input" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Email Address */}
                         <div className="form-group">
                             <label>Email Address</label>
                             <div className="input-wrapper">
@@ -69,22 +90,26 @@ const SignUp = () => {
                             </div>
                         </div>
 
-                        <div className="form-group">
-                            <label>Password</label>
-                            <div className="input-wrapper">
-                                <Lock size={18} className="input-icon" />
-                                <input type="password" placeholder="••••••••" className="form-input" />
+                        {/* Password & Confirm Password */}
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Password</label>
+                                <div className="input-wrapper">
+                                    <Lock size={18} className="input-icon" />
+                                    <input type="password" placeholder="••••••••" className="form-input" />
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Confirm Password</label>
+                                <div className="input-wrapper">
+                                    <Lock size={18} className="input-icon" />
+                                    <input type="password" placeholder="••••••••" className="form-input" />
+                                </div>
                             </div>
                         </div>
 
-                        <div className="form-group">
-                            <label>Confirm Password</label>
-                            <div className="input-wrapper">
-                                <Lock size={18} className="input-icon" />
-                                <input type="password" placeholder="••••••••" className="form-input" />
-                            </div>
-                        </div>
-
+                        {/* Role */}
                         <div className="form-group">
                             <label>Role</label>
                             <div className="role-group">
@@ -103,22 +128,25 @@ const SignUp = () => {
                             </div>
                         </div>
 
+                        {/* Submit */}
                         <button type="submit" className="submit-btn" style={{ transition: 'all 0.3s ease', marginTop: '1rem' }}>
                             Sign Up
                             <ArrowRight size={20} />
                         </button>
                     </form>
 
+                    {/* Already have an account? */}
                     <p className="terms-text" style={{ fontSize: '0.875rem' }}>
                         Already have an account? <Link to="/login" style={{ color: '#baff29', fontWeight: '600' }}>Log in</Link>
                     </p>
 
+                    {/* Terms of Service */}
                     <p className="terms-text">
                         By joining, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
                     </p>
 
                     <div className="auth-footer" style={{ marginTop: '2rem' }}>
-                        <span>© 2024 FitSphere Inc.</span>
+                        <span>© 2026 FitSphere Inc.</span>
                         <div className="footer-links">
                             <a href="#">Help Center</a>
                             <a href="#">Support</a>
