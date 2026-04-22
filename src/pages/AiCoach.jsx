@@ -228,12 +228,6 @@ const AiCoach = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2.5 px-4 py-2 bg-white/5 rounded-xl border border-white/5 hover:border-[#b0f020]/20 transition-colors cursor-help">
-                                <Activity size={14} className="text-[#b0f020]" />
-                                <span className="text-[10px] font-black text-white uppercase tracking-widest">Bio-Sync: ACTIVE</span>
-                            </div>
-                        </div>
                     </motion.header>
 
                     {/* Messages Container */}

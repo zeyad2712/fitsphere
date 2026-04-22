@@ -54,6 +54,7 @@ const Login = () => {
                         </div>
 
                         <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+                            {/* Email Address */}
                             <div className="form-group">
                                 <label>Email Address</label>
                                 <div className="input-wrapper">
@@ -62,6 +63,7 @@ const Login = () => {
                                 </div>
                             </div>
 
+                            {/* Password */}
                             <div className="form-group">
                                 <label>Password</label>
                                 <div className="input-wrapper">
@@ -70,6 +72,13 @@ const Login = () => {
                                 </div>
                             </div>
 
+                            {/* Forgot Password */}
+                            <div className="form-group" style={{ alignItems: 'flex-end', marginTop: '-0.5rem' }}>
+                                <span style={{ fontSize: '0.8rem', color: '#8b9d7b' }}>
+                                    Forgot your password? <Link to="/forget-password" style={{ color: '#baff29', fontWeight: '600' }}>Reset it here</Link>
+                                </span>
+                            </div>
+                            {/* Submit Button */}
                             <button type="submit" className="submit-btn" style={{ transition: 'all 0.3s ease', marginTop: '1rem' }}>
                                 Log In
                                 <ArrowRight size={20} />
@@ -81,7 +90,7 @@ const Login = () => {
                         </p>
 
                         <div className="auth-footer" style={{ marginTop: 'auto' }}>
-                            <span>© 2024 FitSphere Inc.</span>
+                            <span>© 2026 FitSphere Inc.</span>
                             <div className="footer-links">
                                 <a href="#">Help Center</a>
                                 <a href="#">Support</a>

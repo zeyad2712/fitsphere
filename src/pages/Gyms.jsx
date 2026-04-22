@@ -66,86 +66,112 @@ const Gyms = () => {
                         </p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="relative group">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#b0f020] transition-colors" size={20} />
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                        {/* View Switcher */}
+                        <div className="flex bg-[#121612] p-1 rounded-xl border border-[#1c221c] self-stretch sm:self-auto">
+                            <button 
+                                onClick={() => setViewMode('list')}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'list' ? 'bg-[#b0f020] text-black shadow-[0_0_15px_rgba(176,240,32,0.2)]' : 'text-gray-400 hover:text-white'}`}
+                            >
+                                <List size={16} />
+                                <span className="hidden md:inline">List</span>
+                            </button>
+                            <button 
+                                onClick={() => setViewMode('split')}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'split' ? 'bg-[#b0f020] text-black shadow-[0_0_15px_rgba(176,240,32,0.2)]' : 'text-gray-400 hover:text-white'}`}
+                            >
+                                <Shield size={16} />
+                                <span className="hidden md:inline">Split</span>
+                            </button>
+                            <button 
+                                onClick={() => setViewMode('map')}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'map' ? 'bg-[#b0f020] text-black shadow-[0_0_15px_rgba(176,240,32,0.2)]' : 'text-gray-400 hover:text-white'}`}
+                            >
+                                <MapIcon size={16} />
+                                <span className="hidden md:inline">Map</span>
+                            </button>
+                        </div>
+
+                        <div className="relative group flex-1 sm:w-64">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#b0f020] transition-colors" size={18} />
                             <input
                                 type="text"
-                                placeholder="Search gyms or areas..."
+                                placeholder="Search gyms..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="bg-[#121612] border border-[#1c221c] rounded-full py-3 pl-12 pr-6 w-full focus:outline-none focus:border-[#b0f020] transition-all text-sm"
+                                className="bg-[#121612] border border-[#1c221c] rounded-xl py-3 pl-12 pr-6 w-full focus:outline-none focus:border-[#b0f020] transition-all text-sm"
                             />
                         </div>
-                        <button className="bg-[#1c221c] text-white p-3 rounded-full hover:bg-[#252a25] transition-colors flex items-center gap-2 px-6">
-                            <Filter size={18} />
-                            <span className="text-sm font-medium">Filters</span>
-                        </button>
                     </div>
                 </motion.div>
 
                 {/* Main Content Area */}
-                <div className="flex flex-col lg:flex-row gap-6 h-[800px]">
+                <div className={`flex flex-col ${viewMode === 'split' ? 'lg:flex-row' : ''} gap-6 ${viewMode === 'list' ? '' : 'h-[800px]'}`}>
                     {/* List Section */}
-                    <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                        <div className="grid grid-cols-1 gap-6">
-                            {filteredGyms.map((gym, index) => (
-                                <motion.div
-                                    key={gym.id}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                    onClick={() => setSelectedGym(gym)}
-                                    className={`bg-[#121612] border transition-all cursor-pointer rounded-2xl overflow-hidden group flex flex-col sm:flex-row h-full sm:h-48 ${selectedGym?.id === gym.id ? 'border-[#b0f020] shadow-[0_0_20px_rgba(176,240,32,0.1)]' : 'border-[#1c221c] hover:border-[#b0f020]/40'
-                                        }`}
-                                >
-                                    <div className="w-full sm:w-48 h-48 sm:h-full overflow-hidden shrink-0">
-                                        <img src={gym.images?.[0] || gym.image} alt={gym.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                    </div>
-                                    <div className="p-6 flex flex-col justify-between flex-1">
-                                        <div>
-                                            <div className="flex justify-between items-start mb-2">
-                                                <h3 className="text-xl font-bold group-hover:text-[#b0f020] transition-colors">{gym.name}</h3>
-                                                <div className="flex items-center gap-1 text-[#b0f020] bg-[#b0f020]/10 px-2 py-1 rounded text-xs font-bold">
-                                                    <Star size={12} fill="currentColor" />
-                                                    {gym.rating}
+                    {(viewMode === 'list' || viewMode === 'split') && (
+                        <div className={`flex-1 ${viewMode === 'split' ? 'overflow-y-auto pr-2 custom-scrollbar' : ''}`}>
+                            <div className={`grid grid-cols-1 ${viewMode === 'list' ? 'md:grid-cols-2 xl:grid-cols-3' : ''} gap-6`}>
+                                {filteredGyms.map((gym, index) => (
+                                    <motion.div
+                                        key={gym.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        onClick={() => {
+                                            setSelectedGym(gym);
+                                            if (window.innerWidth < 1024) setViewMode('map');
+                                        }}
+                                        className={`bg-[#121612] border transition-all cursor-pointer rounded-2xl overflow-hidden group flex flex-col ${viewMode === 'split' ? 'sm:flex-row h-full sm:h-48' : 'h-full'} ${selectedGym?.id === gym.id ? 'border-[#b0f020] shadow-[0_0_20px_rgba(176,240,32,0.1)]' : 'border-[#1c221c] hover:border-[#b0f020]/40'
+                                            }`}
+                                    >
+                                        <div className={`${viewMode === 'split' ? 'w-full sm:w-48 h-48 sm:h-full' : 'w-full h-56'} overflow-hidden shrink-0`}>
+                                            <img src={gym.images?.[0] || gym.image} alt={gym.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                        </div>
+                                        <div className="p-6 flex flex-col justify-between flex-1">
+                                            <div>
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <h3 className="text-xl font-bold group-hover:text-[#b0f020] transition-colors">{gym.name}</h3>
+                                                    <div className="flex items-center gap-1 text-[#b0f020] bg-[#b0f020]/10 px-2 py-1 rounded text-xs font-bold">
+                                                        <Star size={12} fill="currentColor" />
+                                                        {gym.rating}
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-1 text-gray-400 text-sm mb-4">
+                                                    <MapPin size={14} />
+                                                    {gym.location}
+                                                </div>
+                                                <div className="flex flex-wrap gap-2 mb-4">
+                                                    {gym.features?.slice(0, 3).map((feat, i) => (
+                                                        <span key={i} className="text-[10px] uppercase tracking-wider font-bold text-gray-500 bg-[#0a0d0a] px-2 py-1 rounded border border-[#1c221c]">
+                                                            {feat}
+                                                        </span>
+                                                    ))}
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-1 text-gray-400 text-sm mb-4">
-                                                <MapPin size={14} />
-                                                {gym.location}
-                                            </div>
-                                            <div className="flex flex-wrap gap-2 mb-4">
-                                                {gym.features?.slice(0, 2).map((feat, i) => (
-                                                    <span key={i} className="text-[10px] uppercase tracking-wider font-bold text-gray-500 bg-[#0a0d0a] px-2 py-1 rounded border border-[#1c221c]">
-                                                        {feat}
-                                                    </span>
-                                                ))}
-                                                {gym.features?.length > 2 && <span className="text-[10px] text-gray-600 font-bold">+{gym.features.length - 2} more</span>}
+                                            <div className="flex justify-between items-center pt-4 border-t border-[#1c221c]">
+                                                <span className="text-[#b0f020] font-bold">{gym.price}</span>
+                                                <Link to={`/gym/${gym.id}`} className="px-4 py-2 bg-[#b0f020] rounded-lg text-[#0f120f] text-[10px] font-black uppercase tracking-widest hover:bg-[#9de018] hover:shadow-[0_0_15px_rgba(176,240,32,0.3)] transition-all transform hover:-translate-y-0.5">VIEW DETAILS </Link>
                                             </div>
                                         </div>
-                                        <div className="flex justify-between items-center pt-4 border-t border-[#1c221c]">
-                                            <span className="text-[#b0f020] font-bold">{gym.price}</span>
-                                            <Link to={`/gym/${gym.id}`} className="text-white text-xs font-bold underline hover:text-[#b0f020] transition-colors">VIEW DETAILS</Link>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            ))}
+                                    </motion.div>
+                                ))}
 
-                            {filteredGyms.length === 0 && (
-                                <div className="text-center py-20 bg-[#121612] rounded-2xl border border-dashed border-[#1c221c]">
-                                    <p className="text-gray-500">No gyms found matching your search.</p>
-                                </div>
-                            )}
+                                {filteredGyms.length === 0 && (
+                                    <div className="text-center py-20 bg-[#121612] rounded-2xl border border-dashed border-[#1c221c] col-span-full">
+                                        <p className="text-gray-500">No gyms found matching your search.</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Map Section */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="lg:w-[450px] xl:w-[550px] h-[400px] lg:h-full bg-[#121612] rounded-3xl overflow-hidden border border-[#1c221c] relative z-10"
-                    >
+                    {(viewMode === 'map' || viewMode === 'split') && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className={`${viewMode === 'split' ? 'lg:w-[450px] xl:w-[550px]' : 'w-full'} h-[500px] lg:h-full bg-[#121612] rounded-3xl overflow-hidden border border-[#1c221c] relative z-10`}
+                        >
                         <MapContainer
                             center={mapCenter}
                             zoom={11}
@@ -182,6 +208,7 @@ const Gyms = () => {
                             </button>
                         </div>
                     </motion.div>
+                )}
                 </div>
             </div>
 

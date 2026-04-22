@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, useMotionValue, useTransform, useInView, animate } from 'framer-motion';
-import { MapPin, Users, Cpu, ShoppingCart, Target, PlayCircle } from 'lucide-react';
+import { MapPin, Users, Cpu, ShoppingCart, Target, PlayCircle, ArrowRight, Dumbbell } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import heroBg from '../assets/hero-bg.png';
@@ -34,6 +35,7 @@ const Counter = ({ value }) => {
 };
 
 const Home = () => {
+    const navigate = useNavigate();
     const stats = [
         { value: '500K+', label: 'ACTIVE USERS' },
         { value: '1,200+', label: 'DAILY PLANS' },
@@ -179,7 +181,7 @@ const Home = () => {
                             Unlock your full potential with a curated suite of elite features designed for users who want optimal performance and serious fitness results.
                         </p>
                     </motion.div>
-
+ 
                     <motion.div
                         initial="hidden"
                         whileInView="visible"
@@ -202,6 +204,56 @@ const Home = () => {
                                 </p>
                             </motion.div>
                         ))}
+                    </motion.div>
+                </div>
+            </section>
+ 
+            {/* About Us Section */}
+            <section className="py-24 bg-[#0c100c] relative z-20 border-y border-[#1c221c]">
+                <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center gap-16">
+                    <motion.div 
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={fadeInUp}
+                        className="flex-1"
+                    >
+                        <div className="inline-block px-4 py-1.5 bg-[#b0f020]/10 border border-[#b0f020]/20 rounded-full text-[#b0f020] text-xs font-black uppercase tracking-widest mb-6">
+                            Our Story
+                        </div>
+                        <h2 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">More Than Just <br /><span className="text-[#b0f020]">Fitness.</span></h2>
+                        <p className="text-gray-400 text-lg mb-8 leading-relaxed max-w-xl">
+                            FitSphere was born from a simple mission: to bridge the gap between technology and physical excellence. Our team of world-class developers and elite trainers have worked tirelessly to build a platform that doesn't just track metrics, but transforms lives.
+                        </p>
+                        <button 
+                            onClick={() => navigate('/about')}
+                            className="group flex items-center gap-2 bg-[#b0f020]/10 text-[#b0f020] px-8 py-4 rounded-full font-bold text-lg hover:bg-[#b0f020] hover:text-[#0f120f] transition-all border border-[#b0f020]/20 shadow-[0_0_20px_rgba(176,240,32,0.05)]"
+                        >
+                            Explore Our Mission
+                            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                        </button>
+                    </motion.div>
+                    
+                    <motion.div 
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={fadeInUp}
+                        className="flex-1 w-full"
+                    >
+                        <div className="aspect-[4/3] md:aspect-square rounded-[3rem] bg-gradient-to-br from-[#1c221c] to-[#0a0d0a] border border-white/5 flex items-center justify-center p-8 overflow-hidden relative group">
+                            <div className="absolute inset-0 bg-[#b0f020]/5 blur-3xl rounded-full group-hover:bg-[#b0f020]/10 transition-colors duration-500" />
+                            <Dumbbell size={180} className="text-[#b0f020]/5 absolute -top-12 -right-12 rotate-12 group-hover:rotate-45 transition-transform duration-700" />
+                            <div className="relative z-10 text-center">
+                                <div className="text-7xl md:text-8xl font-black text-[#b0f020] mb-2 tracking-tighter drop-shadow-[0_0_30px_rgba(176,240,32,0.3)]">EST. 2026</div>
+                                <div className="text-gray-400 uppercase tracking-[0.3em] text-xs font-black">Innovation in Motion</div>
+                            </div>
+                            <Users size={180} className="text-[#b0f020]/5 absolute -bottom-12 -left-12 -rotate-12 group-hover:-rotate-45 transition-transform duration-700" />
+                            
+                            {/* Decorative elements */}
+                            <div className="absolute top-1/2 left-4 w-1 h-12 bg-gradient-to-b from-transparent via-[#b0f020]/40 to-transparent" />
+                            <div className="absolute top-1/2 right-4 w-1 h-12 bg-gradient-to-b from-transparent via-[#b0f020]/40 to-transparent" />
+                        </div>
                     </motion.div>
                 </div>
             </section>

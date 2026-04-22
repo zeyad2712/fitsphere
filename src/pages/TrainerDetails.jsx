@@ -104,6 +104,21 @@ const TrainerProfile = () => {
                                         <Award size={14} /> 12+ Certs
                                     </div>
                                 </div>
+
+                                <div className="mt-8 flex flex-col sm:flex-row items-center gap-6">
+                                    <div className="flex flex-col">
+                                        <span className="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-1">Session Rate</span>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-3xl font-black text-white">${trainer.price}</span>
+                                            <span className="text-gray-500 text-sm font-bold">/Session</span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        className="bg-[#b0f020] text-[#0f120f] px-10 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-[#9de018] hover:shadow-[0_0_25px_rgba(176,240,32,0.4)] transition-all transform hover:-translate-y-1 w-full sm:w-auto"
+                                    >
+                                        Book a Session
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
 

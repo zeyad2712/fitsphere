@@ -53,6 +53,27 @@ const SignUp = () => {
                     </div>
 
                     <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+
+                        {/* Role */}
+                        <div className="form-group">
+                            <label>Role</label>
+                            <div className="role-group">
+                                <div className="role-option">
+                                    <input type="radio" id="role-member" name="role" value="member" defaultChecked />
+                                    <label htmlFor="role-member" className="role-label">Member</label>
+                                </div>
+                                <div className="role-option">
+                                    <input type="radio" id="role-trainer" name="role" value="trainer" />
+                                    <label htmlFor="role-trainer" className="role-label">Trainer</label>
+                                </div>
+                                <div className="role-option">
+                                    <input type="radio" id="role-gym" name="role" value="gym" />
+                                    <label htmlFor="role-gym" className="role-label">GYM</label>
+                                </div>
+                            </div>
+                        </div>
+
+
                         {/* Full Name */}
                         <div className="form-group">
                             <label>Full Name</label>
@@ -105,25 +126,6 @@ const SignUp = () => {
                                 <div className="input-wrapper">
                                     <Lock size={18} className="input-icon" />
                                     <input type="password" placeholder="••••••••" className="form-input" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Role */}
-                        <div className="form-group">
-                            <label>Role</label>
-                            <div className="role-group">
-                                <div className="role-option">
-                                    <input type="radio" id="role-member" name="role" value="member" defaultChecked />
-                                    <label htmlFor="role-member" className="role-label">Member</label>
-                                </div>
-                                <div className="role-option">
-                                    <input type="radio" id="role-trainer" name="role" value="trainer" />
-                                    <label htmlFor="role-trainer" className="role-label">Trainer</label>
-                                </div>
-                                <div className="role-option">
-                                    <input type="radio" id="role-gym" name="role" value="gym" />
-                                    <label htmlFor="role-gym" className="role-label">GYM</label>
                                 </div>
                             </div>
                         </div>

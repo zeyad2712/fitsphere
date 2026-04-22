@@ -17,7 +17,8 @@ import {
     Activity,
     Trash2,
     Edit3,
-    LineChart
+    LineChart,
+    Phone
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -32,6 +33,9 @@ const Profile = () => {
     const [userData, setUserData] = useState({
         name: 'Ziad Waleed',
         email: 'ziad.waleed@example.com',
+        phone: '+20 123 456 7890',
+        dob: '1999-05-15',
+        role: 'Member',
         goal: 'Hypertrophy',
         weight: '78kg',
         height: '182cm',
@@ -137,7 +141,12 @@ const Profile = () => {
                                 <div className="w-16 h-16 rounded-2xl bg-[#b0f020]/10 flex items-center justify-center border border-[#b0f020]/20 mb-4 mx-auto lg:mx-0">
                                     <User className="text-[#b0f020]" size={32} />
                                 </div>
-                                <h2 className="text-xl font-bold truncate">{userData.name}</h2>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <h2 className="text-xl font-bold truncate">{userData.name}</h2>
+                                    <span className="shrink-0 px-2 py-0.5 rounded-md bg-[#b0f020]/10 text-[#b0f020] text-[10px] font-black uppercase tracking-wider border border-[#b0f020]/20">
+                                        {userData.role}
+                                    </span>
+                                </div>
                                 <p className="text-sm text-gray-500 truncate">{userData.email}</p>
                             </div>
 
@@ -174,21 +183,30 @@ const Profile = () => {
                                             <h1 className="text-2xl md:text-3xl font-bold mb-2">Personal Information</h1>
                                             <p className="text-xs md:text-sm text-gray-500">Manage your physical metrics and goals.</p>
                                         </div>
-                                        <button
-                                            onClick={() => {
-                                                setModalType('edit-profile');
-                                                setIsModalOpen(true);
-                                            }}
-                                            className="bg-[#b0f020]/10 text-[#b0f020] px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-[#b0f020] hover:text-black transition-all border border-[#b0f020]/20 text-sm"
-                                        >
-                                            <Edit3 size={16} /> Edit Profile
-                                        </button>
+                                        <div className="flex items-center gap-3 w-full md:w-auto">
+                                            <button
+                                                onClick={() => {
+                                                    setModalType('edit-profile');
+                                                    setIsModalOpen(true);
+                                                }}
+                                                className="flex-1 md:flex-none bg-[#b0f020]/10 text-[#b0f020] px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#b0f020] hover:text-black transition-all border border-[#b0f020]/20 text-sm"
+                                            >
+                                                <Edit3 size={16} /> Edit Profile
+                                            </button>
+                                            <button
+                                                className="flex-1 md:flex-none bg-[#b0f020]/10 text-[#b0f020] px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#b0f020] hover:text-black transition-all border border-[#b0f020]/20 text-sm"
+                                            >
+                                                <Plus size={16} /> Add Information
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <div className="grid sm:grid-cols-2 gap-4 md:gap-6">
                                         {[
                                             { label: 'Full Name', value: userData.name, icon: <User /> },
                                             { label: 'Email Address', value: userData.email, icon: <Mail /> },
+                                            { label: 'Phone Number', value: userData.phone, icon: <Phone size={16} /> },
+                                            { label: 'Date of Birth', value: userData.dob, icon: <Calendar size={16} /> },
                                             { label: 'Current Height', value: userData.height, icon: <Ruler /> },
                                             { label: 'Current Weight', value: userData.weight, icon: <Weight /> },
                                             { label: 'Experience Level', value: userData.level, icon: <Activity /> },
@@ -358,6 +376,16 @@ const Profile = () => {
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
+                                                <label className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest font-bold">Phone Number</label>
+                                                <input required name="phone" defaultValue={userData.phone} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 md:py-4 px-6 focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest font-bold">Date of Birth</label>
+                                                <input required type="date" name="dob" defaultValue={userData.dob} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 md:py-4 px-6 focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all" />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
                                                 <label className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest font-bold">Height</label>
                                                 <input required name="height" defaultValue={userData.height} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 md:py-4 px-6 focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all" />
                                             </div>
@@ -436,7 +464,6 @@ const Profile = () => {
                                         )}
                                     </>
                                 )}
-
                                 <button
                                     type="submit"
                                     className="w-full bg-[#b0f020] text-black font-bold py-4 md:py-5 rounded-2xl hover:bg-[#9de018] shadow-[0_10px_30px_rgba(176,240,32,0.15)] transition-all mt-4 hover:scale-[1.01] active:scale-[0.99] text-sm md:text-base"
