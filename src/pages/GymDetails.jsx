@@ -10,6 +10,22 @@ import {
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { gymsData } from '../data/gyms';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix for leaflet default icon issue in React
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const IconMap = {
     Waves: Waves,
@@ -71,8 +87,8 @@ const BookingModal = ({ isOpen, onClose, gymName }) => {
                             <div className="mb-8">
                                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Choose Date</h3>
                                 <div className="relative group">
-                                    <input 
-                                        type="date" 
+                                    <input
+                                        type="date"
                                         className="w-full bg-[#121612] border border-white/5 rounded-2xl py-4 px-6 text-sm font-bold text-white focus:outline-none focus:border-[#b0f020] transition-all cursor-pointer [color-scheme:dark]"
                                         onChange={(e) => setSelectedDate(e.target.value)}
                                         min={new Date().toISOString().split('T')[0]}
@@ -125,11 +141,78 @@ const BookingModal = ({ isOpen, onClose, gymName }) => {
     );
 };
 
+const MapModal = ({ isOpen, onClose, address, gymName, coords }) => {
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="absolute inset-0 bg-black/90 backdrop-blur-md"
+                    />
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        className="relative bg-[#121612] border border-[#1c221c] w-full max-w-4xl h-[70vh] rounded-[32px] overflow-hidden shadow-2xl flex flex-col"
+                    >
+                        <div className="p-6 flex justify-between items-center border-b border-white/5">
+                            <div>
+                                <h2 className="text-xl font-bold">{gymName} Location</h2>
+                                <p className="text-sm text-gray-500">{address}</p>
+                            </div>
+                            <button onClick={onClose} className="p-2 hover:bg-[#1c221c] rounded-full transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
+                        <div className="flex-1 bg-[#0a0d0a] relative">
+                            <MapContainer
+                                center={coords}
+                                zoom={15}
+                                style={{ height: '100%', width: '100%', background: '#0a0d0a' }}
+                                scrollWheelZoom={true}
+                            >
+                                <TileLayer
+                                    url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                                />
+                                <Marker position={coords}>
+                                    <Popup className="custom-popup">
+                                        <div className="p-1 text-black">
+                                            <h4 className="font-bold">{gymName}</h4>
+                                            <p className="text-xs text-gray-600">{address}</p>
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            </MapContainer>
+
+                            <style dangerouslySetInnerHTML={{
+                                __html: `
+                                .leaflet-popup-content-wrapper {
+                                    border-radius: 12px !important;
+                                    background: #fff !important;
+                                }
+                                .leaflet-popup-tip {
+                                    background: #fff !important;
+                                }
+                            `}} />
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>
+    );
+};
+
 const GymDetails = () => {
     const { id } = useParams();
     const gym = gymsData.find(g => g.id === parseInt(id));
     const [activeTab, setActiveTab] = useState('Overview');
     const [isBookingOpen, setIsBookingOpen] = useState(false);
+    const [isMapOpen, setIsMapOpen] = useState(false);
     const [currentImgIndex, setCurrentImgIndex] = useState(0);
 
     if (!gym) return <div className="bg-[#0a0d0a] min-h-screen text-white flex items-center justify-center">Gym not found</div>;
@@ -152,6 +235,14 @@ const GymDetails = () => {
                 isOpen={isBookingOpen}
                 onClose={() => setIsBookingOpen(false)}
                 gymName={gym.name}
+            />
+
+            <MapModal
+                isOpen={isMapOpen}
+                onClose={() => setIsMapOpen(false)}
+                address={gym.address}
+                gymName={gym.name}
+                coords={gym.coords}
             />
 
             <div className="pt-24 pb-20 px-6 md:px-12 max-w-7xl mx-auto">
@@ -193,18 +284,18 @@ const GymDetails = () => {
                                     className="absolute inset-0 w-full h-full object-cover"
                                 />
                             </AnimatePresence>
-                            
+
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20"></div>
 
                             {/* Slider Controls */}
                             <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button 
+                                <button
                                     onClick={prevImg}
                                     className="p-3 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 text-white hover:bg-[#b0f020] hover:text-[#0f120f] transition-all"
                                 >
                                     <ChevronLeft size={24} />
                                 </button>
-                                <button 
+                                <button
                                     onClick={nextImg}
                                     className="p-3 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 text-white hover:bg-[#b0f020] hover:text-[#0f120f] transition-all"
                                 >
@@ -218,9 +309,8 @@ const GymDetails = () => {
                                     <button
                                         key={i}
                                         onClick={() => setCurrentImgIndex(i)}
-                                        className={`h-2 rounded-full transition-all duration-300 ${
-                                            currentImgIndex === i ? 'w-8 bg-[#b0f020]' : 'w-2 bg-white/30 hover:bg-white/50'
-                                        }`}
+                                        className={`h-2 rounded-full transition-all duration-300 ${currentImgIndex === i ? 'w-8 bg-[#b0f020]' : 'w-2 bg-white/30 hover:bg-white/50'
+                                            }`}
                                     />
                                 ))}
                             </div>
@@ -409,7 +499,7 @@ const GymDetails = () => {
 
                     {/* Right Column (Sidebar) */}
                     <div className="lg:w-[350px] space-y-6">
-                        {/* Getting Here Card (from image) */}
+                        {/* Getting Here Card */}
                         <div className="bg-[#121612] border border-[#1c221c] rounded-3xl overflow-hidden group">
                             <div className="relative h-48">
                                 <img
@@ -419,11 +509,15 @@ const GymDetails = () => {
                                 />
                                 <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                                     <h3 className="text-xl font-bold mb-2">Getting here</h3>
-                                    <p className="text-sm text-gray-400">Free parking available for members</p>
+                                    <p className="text-sm text-[#b0f020] font-bold mb-1">{gym.location}</p>
+                                    <p className="text-xs text-gray-400 max-w-[200px]">{gym.address}</p>
                                 </div>
                             </div>
                             <div className="p-4">
-                                <button className="w-full bg-[#1c221c] hover:bg-[#252a25] text-white py-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 border border-white/5">
+                                <button
+                                    onClick={() => setIsMapOpen(true)}
+                                    className="w-full bg-[#1c221c] hover:bg-[#b0f020] hover:text-black text-white py-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 border border-white/5"
+                                >
                                     <MapIcon size={16} />
                                     View on Map
                                 </button>
@@ -431,7 +525,7 @@ const GymDetails = () => {
                         </div>
 
                         {/* CTA / Info Card */}
-                        <div className="bg-gradient-to-br from-[#121612] to-[#0c100c] border border-[#1c221c] rounded-3xl p-8 relative overflow-hidden group">
+                        {/* <div className="bg-gradient-to-br from-[#121612] to-[#0c100c] border border-[#1c221c] rounded-3xl p-8 relative overflow-hidden group">
                             <div className="absolute -right-8 -bottom-8 opacity-10 group-hover:scale-110 transition-transform duration-700">
                                 <Dumbbell size={160} />
                             </div>
@@ -446,7 +540,7 @@ const GymDetails = () => {
                                     LEARN MORE <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ChevronUp } from 'lucide-react';
+import { ChevronUp, MessageSquare, X, Send, Bot } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Lazy load pages
 const Home = lazy(() => import('./pages/Home'));
@@ -72,10 +73,116 @@ const ScrollToTop = () => {
     );
 };
 
+const ChatBot = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [messages, setMessages] = useState([
+        { id: 1, text: "Hey there! 👋 I'm your FitSphere AI. How can I help you crush your goals today?", isBot: true }
+    ]);
+    const [inputValue, setInputValue] = useState("");
+
+    const handleSend = (e) => {
+        e.preventDefault();
+        if (!inputValue.trim()) return;
+
+        const newUserMsg = { id: Date.now(), text: inputValue, isBot: false };
+        setMessages(prev => [...prev, newUserMsg]);
+        setInputValue("");
+
+        // Mock bot response
+        setTimeout(() => {
+            setMessages(prev => [...prev, {
+                id: Date.now() + 1,
+                text: "That's a great question! I'm currently in training mode, but soon I'll be able to track your macros and suggest workouts perfectly.",
+                isBot: true
+            }]);
+        }, 1000);
+    };
+
+    return (
+        <div className="fixed bottom-24 right-8 z-[9999] flex flex-col items-end">
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20, scale: 0.95, transformOrigin: 'bottom right' }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                        className="mb-4 w-[350px] h-[500px] bg-[#121612] border border-[#1c221c] rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden"
+                    >
+                        {/* Header */}
+                        <div className="p-6 bg-[#1c221c] flex items-center justify-between border-b border-white/5">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-[#b0f020] rounded-xl flex items-center justify-center text-black">
+                                    <Bot size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-sm text-white">FitSphere AI</h3>
+                                    <span className="text-[10px] text-[#b0f020] font-black uppercase tracking-widest">Online Now</span>
+                                </div>
+                            </div>
+                            <button onClick={() => setIsOpen(false)} className="text-gray-500 hover:text-white transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Messages Area */}
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-[#0a0d0a]/50">
+                            {messages.map((msg) => (
+                                <div key={msg.id} className={`flex ${msg.isBot ? 'justify-start' : 'justify-end'}`}>
+                                    <div className={`max-w-[80%] p-4 rounded-2xl text-xs font-medium leading-relaxed ${msg.isBot
+                                        ? 'bg-[#1c221c] text-gray-300 rounded-tl-none border border-white/5'
+                                        : 'bg-[#b0f020] text-black rounded-tr-none font-bold'
+                                        }`}>
+                                        {msg.text}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Input Area */}
+                        <form onSubmit={handleSend} className="p-4 bg-[#1c221c] border-t border-white/5">
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={inputValue}
+                                    onChange={(e) => setInputValue(e.target.value)}
+                                    placeholder="Type your message..."
+                                    className="w-full bg-[#0a0d0a] border border-white/5 rounded-xl py-3 pl-4 pr-12 text-xs focus:outline-none focus:border-[#b0f020] transition-all"
+                                />
+                                <button
+                                    type="submit"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#b0f020] text-black rounded-lg flex items-center justify-center hover:bg-[#9de018] transition-colors"
+                                >
+                                    <Send size={14} />
+                                </button>
+                            </div>
+                        </form>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className={`w-14 h-14 rounded-2xl shadow-2xl flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 group ${isOpen ? 'bg-[#1c221c] text-[#b0f020] rotate-90' : 'bg-[#1c221c] text-[#b0f020] border border-[#b0f020]/20'
+                    }`}
+                aria-label="Toggle Chat"
+            >
+                {isOpen ? <X size={28} /> : <MessageSquare size={28} className="group-hover:animate-pulse" />}
+
+                {!isOpen && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#b0f020] rounded-full flex items-center justify-center">
+                        <span className="w-2 h-2 bg-black rounded-full animate-ping" />
+                    </span>
+                )}
+            </button>
+        </div>
+    );
+};
+
 const App = () => {
     return (
         <Router>
             <ScrollToTop />
+            <ChatBot />
             <Suspense fallback={<PageLoader />}>
                 <Routes>
                     <Route path="/" element={<Home />} />
