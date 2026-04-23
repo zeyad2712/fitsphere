@@ -5,7 +5,7 @@ import {
     MapPin, Star, Clock, ArrowLeft, Share2, Heart,
     Waves, Thermometer, Activity, ShowerHead,
     CupSoda, Wifi, Shirt, Dumbbell, Map as MapIcon, ChevronRight,
-    X, ChevronLeft
+    X, ChevronLeft, CheckCircle2
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -67,48 +67,27 @@ const BookingModal = ({ isOpen, onClose, gymName }) => {
                                 </button>
                             </div>
 
-                            {/* Date Picker */}
+                            {/* Date Input */}
                             <div className="mb-8">
-                                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Select Date</h3>
-                                <div className="flex items-center justify-between mb-4">
-                                    <button className="text-gray-500 hover:text-white"><ChevronLeft size={20} /></button>
-                                    <span className="font-bold text-sm">October 2023</span>
-                                    <button className="text-gray-500 hover:text-white"><ChevronRight size={20} /></button>
-                                </div>
-                                <div className="flex justify-between">
-                                    {days.map((item, i) => (
-                                        <div key={i} className="flex flex-col items-center gap-2">
-                                            <span className="text-[10px] font-bold text-gray-500">{item.day}</span>
-                                            <button
-                                                onClick={() => setSelectedDate(item.date)}
-                                                className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all ${selectedDate === item.date
-                                                    ? 'bg-[#b0f020] text-[#0f120f]'
-                                                    : 'hover:bg-[#1c221c] text-gray-400'
-                                                    }`}
-                                            >
-                                                {item.date}
-                                            </button>
-                                        </div>
-                                    ))}
+                                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Choose Date</h3>
+                                <div className="relative group">
+                                    <input 
+                                        type="date" 
+                                        className="w-full bg-[#121612] border border-white/5 rounded-2xl py-4 px-6 text-sm font-bold text-white focus:outline-none focus:border-[#b0f020] transition-all cursor-pointer [color-scheme:dark]"
+                                        onChange={(e) => setSelectedDate(e.target.value)}
+                                        min={new Date().toISOString().split('T')[0]}
+                                    />
                                 </div>
                             </div>
 
-                            {/* Session Type */}
+                            {/* Session Type (Fixed) */}
                             <div className="mb-8">
                                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Session Type</h3>
-                                <div className="flex gap-3">
-                                    {['Personal Training', 'Yoga Flow'].map(type => (
-                                        <button
-                                            key={type}
-                                            onClick={() => setSessionType(type)}
-                                            className={`flex-1 py-3 rounded-xl border text-xs font-bold transition-all ${sessionType === type
-                                                ? 'bg-[#b0f020]/10 border-[#b0f020] text-[#b0f020]'
-                                                : 'border-[#1c221c] text-gray-500 hover:border-gray-700'
-                                                }`}
-                                        >
-                                            {type}
-                                        </button>
-                                    ))}
+                                <div className="bg-[#b0f020]/10 border border-[#b0f020]/30 rounded-2xl p-4 flex items-center justify-between group">
+                                    <span className="text-[#b0f020] text-sm font-black uppercase italic tracking-widest">Personal Training</span>
+                                    <div className="w-6 h-6 rounded-full bg-[#b0f020] flex items-center justify-center text-[#0f120f]">
+                                        <CheckCircle2 size={14} />
+                                    </div>
                                 </div>
                             </div>
 

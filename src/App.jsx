@@ -23,6 +23,11 @@ const AboutUs = lazy(() => import('./pages/AboutUs'));
 const ContactUs = lazy(() => import('./pages/ContactUs'));
 const AiCoach = lazy(() => import('./pages/AiCoach'));
 const Profile = lazy(() => import('./pages/Profile'));
+const Cart = lazy(() => import('./pages/Cart'));
+const Wishlist = lazy(() => import('./pages/Wishlist'));
+const CheckOutPage = lazy(() => import('./pages/CheckOutPage'));
+const ConfirmationPayment = lazy(() => import('./pages/ConfirmationPayment'));
+const TrainersBundles = lazy(() => import('./pages/TrainersBundles'));
 
 // Loading component
 const PageLoader = () => (
@@ -93,6 +98,11 @@ const App = () => {
                     <Route path="/contact" element={<ContactUs />} />
                     <Route path="/ai-coach" element={<AiCoach />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/checkout" element={<CheckOutPage />} />
+                    <Route path="/confirmation-payment" element={<ConfirmationPayment />} />
+                    <Route path="/bundles" element={<TrainersBundles />} />
                 </Routes>
             </Suspense>
         </Router>

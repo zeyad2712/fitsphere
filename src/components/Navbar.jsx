@@ -34,6 +34,7 @@ const Navbar = () => {
           <Link to="/gyms" className="hover:text-[#b0f020] transition-colors">GYM Finder</Link>
           <Link to="/trainers" className="hover:text-[#b0f020] transition-colors">Trainers</Link>
           <Link to="/ai-coach" className="hover:text-[#b0f020] transition-colors">AI Coach</Link>
+          <Link to="/bundles" className="hover:text-[#b0f020] transition-colors">Bundles</Link>
           <Link to="/shop" className="hover:text-[#b0f020] transition-colors">Shop</Link>
           <Link to="/onboarding-videos" className="hover:text-[#b0f020] transition-colors">Videos Library</Link>
           <Link to="/wishlist" className="hover:text-[#b0f020] transition-colors"><Heart size={18} /></Link>
@@ -72,6 +73,7 @@ const Navbar = () => {
           <Link to="/gyms" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>GYM Finder</Link>
           <Link to="/trainers" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Trainers</Link>
           <Link to="/ai-coach" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>AI Coach</Link>
+          <Link to="/bundles" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Bundles</Link>
           <Link to="/shop" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Shop</Link>
           <Link to="/onboarding-videos" className="text-gray-300 hover:text-[#b0f020] p-2" onClick={() => setMobileMenuOpen(false)}>Videos Library</Link>
           <Link to="/wishlist" className="text-gray-300 hover:text-[#b0f020] p-2 flex gap-2" onClick={() => setMobileMenuOpen(false)}><Heart size={18} />Wishlist</Link>
