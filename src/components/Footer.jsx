@@ -34,10 +34,10 @@ const Footer = () => {
           <div>
             <h4 className="text-white font-semibold mb-6">Product</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-gray-400 text-sm hover:text-[#b0f020] transition-colors">Features</a></li>
-              <li><a href="#" className="text-gray-400 text-sm hover:text-[#b0f020] transition-colors">Online Coaching</a></li>
-              <li><a href="#" className="text-gray-400 text-sm hover:text-[#b0f020] transition-colors">AI Personal Trainer</a></li>
-              <li><a href="#" className="text-gray-400 text-sm hover:text-[#b0f020] transition-colors">Gym Finder</a></li>
+              <li><Link to="#" className="text-gray-400 text-sm hover:text-[#b0f020] transition-colors">Features</Link></li>
+              <li><Link to="/trainers" className="text-gray-400 text-sm hover:text-[#b0f020] transition-colors">Online Coaching</Link></li>
+              <li><Link to="/aicoach" className="text-gray-400 text-sm hover:text-[#b0f020] transition-colors">AI Personal Trainer</Link></li>
+              <li><Link to="/gyms" className="text-gray-400 text-sm hover:text-[#b0f020] transition-colors">Gym Finder</Link></li>
             </ul>
           </div>
 
