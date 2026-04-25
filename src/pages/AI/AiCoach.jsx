@@ -13,7 +13,7 @@ import {
     MoreVertical,
     Activity
 } from 'lucide-react';
-import Navbar from '../components/Navbar';
+import Navbar from '../../components/Navbar';
 
 const AiCoach = () => {
     const [messages, setMessages] = useState([
