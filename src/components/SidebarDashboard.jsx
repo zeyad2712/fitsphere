@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
     LayoutDashboard, Users, Calendar, BarChart3, Settings, 
-    MessageSquare, LogOut, Dumbbell, Globe
+    MessageSquare, LogOut, Dumbbell, Globe, Package, Tags, Layers, Video
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
@@ -27,16 +27,21 @@ const SidebarDashboard = ({ isSidebarOpen, role = 'trainer', activeTab, setActiv
             { id: 'settings', label: 'Settings', icon: Settings, path: '#' },
         ],
         admin: [
-            { id: 'overview', label: 'Overview', icon: LayoutDashboard, path: '/admin-dashboard' },
-            { id: 'users', label: 'User Management', icon: Users, path: '#' },
-            { id: 'analytics', label: 'System Stats', icon: BarChart3, path: '#' },
-            { id: 'settings', label: 'Admin Settings', icon: Settings, path: '#' },
+            { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, path: '/admin-dashboard' },
+            { id: 'users', label: 'Manage Users', icon: Users, path: '/admin-dashboard' },
+            { id: 'products', label: 'Manage Products', icon: Package, path: '/admin-dashboard' },
+            { id: 'productCategories', label: 'Product Categories', icon: Tags, path: '/admin-dashboard' },
+            { id: 'videoCategories', label: 'Video Categories', icon: Layers, path: '/admin-dashboard' },
+            { id: 'videos', label: 'Video Library', icon: Video, path: '/admin-dashboard' },
         ]
     };
 
     const menuItems = menuConfigs[role] || menuConfigs.trainer;
 
     const isActive = (item) => {
+        if (role === 'admin') {
+            return activeTab === item.id;
+        }
         if (item.path !== '#' && location.pathname === item.path) return true;
         return activeTab === item.id;
     };

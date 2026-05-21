@@ -7,12 +7,19 @@ import { videos } from '../../data/videos';
 
 const WorkoutVideos = () => {
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedMuscle, setSelectedMuscle] = useState('All');
 
-    // Specifically filter for Workout category
+    // Get unique individual muscles from workout videos
+    const muscles = ['All', ...new Set(videos
+        .filter(v => v.category === 'Workout')
+        .flatMap(v => v.targetedMuscle.split(',').map(m => m.trim())))];
+
+    // Filter logic
     const workoutVideos = videos.filter((video) => {
         const matchesCategory = video.category === 'Workout';
         const matchesSearch = video.title.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCategory && matchesSearch;
+        const matchesMuscle = selectedMuscle === 'All' || video.targetedMuscle.includes(selectedMuscle);
+        return matchesCategory && matchesSearch && matchesMuscle;
     });
 
     return (
@@ -51,14 +58,14 @@ const WorkoutVideos = () => {
                     </p>
                 </motion.div>
 
-                {/* Search */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="flex justify-center mb-12"
-                >
-                    <div className="relative w-full md:w-96">
+                {/* Search and Filters */}
+                <div className="flex flex-col items-center gap-8 mb-16">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="relative w-full md:w-96"
+                    >
                         <input
                             type="text"
                             placeholder="Search workouts..."
@@ -67,8 +74,30 @@ const WorkoutVideos = () => {
                             className="w-full bg-white/5 border border-white/10 rounded-full py-3 px-6 pl-12 text-white focus:outline-none focus:border-[#ff4d4d] transition-colors"
                         />
                         <svg className="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                    </div>
-                </motion.div>
+                    </motion.div>
+
+                    {/* Muscle Filter Chips */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                        className="flex flex-wrap justify-center gap-3"
+                    >
+                        {muscles.map((muscle) => (
+                            <button
+                                key={muscle}
+                                onClick={() => setSelectedMuscle(muscle)}
+                                className={`px-6 py-2 rounded-full text-sm font-semibold transition-all duration-300 border ${
+                                    selectedMuscle === muscle
+                                        ? 'bg-[#ff4d4d] border-[#ff4d4d] text-white shadow-[0_0_15px_rgba(255,77,77,0.4)]'
+                                        : 'bg-white/5 border-white/10 text-gray-400 hover:border-[#ff4d4d]/50 hover:text-white'
+                                }`}
+                            >
+                                {muscle}
+                            </button>
+                        ))}
+                    </motion.div>
+                </div>
 
                 {/* Videos Grid */}
                 {workoutVideos.length > 0 ? (
@@ -120,7 +149,7 @@ const WorkoutVideos = () => {
                         className="text-center py-20 bg-white/5 rounded-2xl border border-white/10"
                     >
                         <svg className="w-16 h-16 text-gray-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <h3 className="text-xl text-gray-300 font-medium font-sans">No workouts found matching your search.</h3>
+                        <h3 className="text-xl text-gray-300 font-medium font-sans">No workouts found matching your criteria.</h3>
                     </motion.div>
                 )}
             </div>

@@ -37,7 +37,7 @@ const Profile = () => {
         email: 'ziad.waleed@example.com',
         phone: '+20 123 456 7890',
         dob: '1999-05-15',
-        role: 'trainer',
+        role: 'member',
         goal: 'Hypertrophy',
         weight: '78kg',
         height: '182cm',
@@ -203,11 +203,13 @@ const Profile = () => {
                                             >
                                                 <Edit3 size={16} /> Edit Profile
                                             </button>
-                                            <button
-                                                className="flex-1 md:flex-none bg-[#b0f020]/10 text-[#b0f020] px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#b0f020] hover:text-black transition-all border border-[#b0f020]/20 text-sm"
+                                            {/* Admin Panel Button */}
+                                            <Link
+                                                to="/admin-dashboard"
+                                                className="flex-1 md:flex-none bg-[#b0f020]/10 text-[#b0f020] px-4 md:px-6 py-2 md:py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#b0f020] hover:text-black transition-all border border-[#b0f020]/20 text-sm text-center"
                                             >
-                                                <Plus size={16} /> Add Information
-                                            </button>
+                                                Go to Admin Panel
+                                            </Link>
                                         </div>
                                     </div>
 

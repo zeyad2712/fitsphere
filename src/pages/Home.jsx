@@ -259,7 +259,7 @@ const Home = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-32 bg-gradient-to-b from-[#0a0d0a] to-[#0c100c] relative z-20">
+            {/* <section className="py-32 bg-gradient-to-b from-[#0a0d0a] to-[#0c100c] relative z-20">
                 <div className="max-w-4xl mx-auto px-6 text-center">
                     <motion.div
                         initial="hidden"
@@ -280,7 +280,7 @@ const Home = () => {
                         <p className="mt-6 text-sm text-gray-600">No credit card required. Cancel anytime.</p>
                     </motion.div>
                 </div>
-            </section>
+            </section> */}
 
             <Footer />
         </div>

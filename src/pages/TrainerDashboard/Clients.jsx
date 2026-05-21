@@ -316,9 +316,9 @@ const Clients = () => {
                                                         </AnimatePresence>
                                                     </div>
 
-                                                    <button className="p-2 bg-white/5 text-gray-400 rounded-lg border border-white/5 hover:border-white/10 hover:text-white transition-all">
+                                                    {/* <button className="p-2 bg-white/5 text-gray-400 rounded-lg border border-white/5 hover:border-white/10 hover:text-white transition-all">
                                                         <MessageSquare size={18} />
-                                                    </button>
+                                                    </button> */}
                                                     <button className="p-2 bg-white/5 text-gray-400 rounded-lg border border-white/5 hover:border-white/10 hover:text-white transition-all">
                                                         <Edit3 size={18} />
                                                     </button>
