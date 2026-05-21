@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronDown, Star, X } from 'lucide-react';
 import Navbar from '../../components/Navbar';
@@ -7,6 +7,7 @@ import Footer from '../../components/Footer';
 import { trainersData } from '../../data/trainers';
 
 const Trainers = () => {
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedSpecialties, setSelectedSpecialties] = useState([]);
     const [minRating, setMinRating] = useState(0);
@@ -161,9 +162,9 @@ const Trainers = () => {
                                     className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-[#b0f020]"
                                 />
                                 <div className="flex justify-between text-xs text-gray-500 mt-2 font-medium">
-                                    <span>$20</span>
-                                    <span>Up to ${maxPrice}</span>
-                                    <span>$200+</span>
+                                    <span>20 EGP</span>
+                                    <span>Up to {maxPrice} EGP</span>
+                                    <span>200+ EGP</span>
                                 </div>
                             </div>
 
@@ -293,8 +294,8 @@ const Trainers = () => {
 
                                             <div className="mb-6">
                                                 <span className="text-sm text-gray-400">Starting at </span>
-                                                <span className="text-[#b0f020] font-bold text-lg">${trainer.price}</span>
-                                                <span className="text-sm text-gray-500">/hr</span>
+                                                <span className="text-[#b0f020] font-bold text-lg">{trainer.price}EGP</span>
+                                                <span className="text-sm text-gray-500">/month</span>
                                             </div>
 
                                             <div className="flex gap-3">
@@ -304,7 +305,18 @@ const Trainers = () => {
                                                 >
                                                     VIEW PROFILE
                                                 </Link>
-                                                <button className="flex-1 py-3 px-4 rounded-xl bg-[#b0f020] text-[#0f120f] text-xs font-bold hover:bg-[#9de018] transition-colors shadow-lg shadow-[#b0f020]/20">
+                                                <button 
+                                                    onClick={() => navigate('/trainer/booking', {
+                                                        state: {
+                                                            trainerId: trainer.id,
+                                                            trainerName: trainer.name,
+                                                            trainerPrice: trainer.price,
+                                                            trainerSpecialties: trainer.specialties,
+                                                            trainerImage: trainer.image
+                                                        }
+                                                    })}
+                                                    className="flex-1 py-3 px-4 rounded-xl bg-[#b0f020] text-[#0f120f] text-xs font-bold hover:bg-[#9de018] transition-colors shadow-lg shadow-[#b0f020]/20"
+                                                >
                                                     BOOK NOW
                                                 </button>
                                             </div>

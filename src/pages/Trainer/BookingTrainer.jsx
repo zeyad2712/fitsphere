@@ -3,21 +3,22 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     CreditCard, Calendar, CheckCircle2, Lock, ArrowLeft, 
-    ShieldCheck, Activity, MapPin, Dumbbell 
+    ShieldCheck, Activity, MapPin, Dumbbell, Clock, User
 } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
-const Booking = () => {
+const BookingTrainer = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
     // Safe fallback defaults if page is accessed directly
     const { 
-        gymName = "FitSphere Elite", 
-        gymPrice = "$80/mo", 
-        selectedDate = new Date().toISOString().split('T')[0], 
-        sessionType = "Personal Training" 
+        trainerId = 1,
+        trainerName = "Marcus Vance", 
+        trainerPrice = 75, 
+        trainerSpecialties = ["Strength"],
+        trainerImage = "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=200&h=200&fit=crop"
     } = location.state || {};
 
     // Form inputs state
@@ -25,12 +26,25 @@ const Booking = () => {
     const [cardNumber, setCardNumber] = useState('');
     const [expiry, setExpiry] = useState('');
     const [cvv, setCvv] = useState('');
-    const [isFocused, setIsFocused] = useState(''); // To flip card if needed (CVV focus)
+    const [isFocused, setIsFocused] = useState('');
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Calculate Price details
-    const cleanPrice = parseFloat(gymPrice.replace(/[^0-9.]/g, '')) || 80.00;
+    // Trainer specific booking states
+    const [selectedDate, setSelectedDate] = useState(new Date(Date.now() + 86400000).toISOString().split('T')[0]); // tomorrow
+    const [selectedTime, setSelectedTime] = useState('1 month');
+
+    const timeSlots = ['1 month', '3 months', '6 months', '1 year'];
+
+    // Calculate Price details based on period
+    let durationMultiplier = 1;
+    if (selectedTime === '3 months') durationMultiplier = 3;
+    if (selectedTime === '6 months') durationMultiplier = 6;
+    if (selectedTime === '1 year') durationMultiplier = 12;
+
+    const basePrice = parseFloat(trainerPrice) || 75.00;
+    const cleanPrice = basePrice * durationMultiplier;
+    // The Fees
     const tax = Math.round(cleanPrice * 0.14 * 100) / 100; // 14% tax
     const total = cleanPrice + tax;
 
@@ -38,7 +52,6 @@ const Booking = () => {
     const handleCardNumberChange = (e) => {
         let value = e.target.value.replace(/\D/g, '');
         if (value.length > 16) value = value.slice(0, 16);
-        // Format as 1234 5678 1234 5678
         const formatted = value.match(/.{1,4}/g)?.join(' ') || value;
         setCardNumber(formatted);
     };
@@ -67,11 +80,10 @@ const Booking = () => {
         if (!expRegex.test(expiry)) {
             tempErrors.expiry = "Enter a valid expiry date (MM/YY)";
         } else {
-            // Check if expired
             const [month, year] = expiry.split('/');
             const expDate = new Date(parseInt('20' + year), parseInt(month) - 1, 1);
             const today = new Date();
-            today.setDate(1); // Set to start of month for clean compare
+            today.setDate(1);
             if (expDate < today) {
                 tempErrors.expiry = "This card has expired";
             }
@@ -90,7 +102,7 @@ const Booking = () => {
         setIsSubmitting(true);
 
         const bookingRef = `FS-BK-${Math.floor(100000 + Math.random() * 900000)}`;
-        const totalAmount = `$${total.toFixed(2)}`;
+        const totalAmount = `${total.toFixed(2)} EGP`;
 
         // Simulate payment gateway call
         setTimeout(() => {
@@ -99,10 +111,10 @@ const Booking = () => {
             // Save booking to localStorage
             const newBooking = {
                 id: bookingRef,
-                gymName,
-                gymPrice,
-                selectedDate,
-                sessionType,
+                gymName: `Trainer: ${trainerName}`,
+                gymPrice: `${cleanPrice.toFixed(2)} EGP`,
+                selectedDate: `${selectedDate} at ${selectedTime}`,
+                sessionType: `${trainerSpecialties?.[0] || 'Personal Trainer'} Session`,
                 cardNumber: cardNumber.slice(-4),
                 cardName,
                 totalAmount,
@@ -118,12 +130,14 @@ const Booking = () => {
                 console.error("Failed to save booking:", err);
             }
 
-            navigate('/gym/confirmation-booking', {
+            navigate('/trainer/confirmation-booking', {
                 state: {
-                    gymName,
-                    gymPrice,
+                    trainerName,
+                    trainerPrice,
+                    trainerSpecialties,
+                    trainerImage,
                     selectedDate,
-                    sessionType,
+                    selectedTime,
                     cardNumber: cardNumber.slice(-4),
                     cardName,
                     totalAmount,
@@ -163,7 +177,7 @@ const Booking = () => {
                                 <Dumbbell size={54} className="animate-pulse" />
                             </motion.div>
                         </div>
-                        <h2 className="text-xl font-bold uppercase tracking-wider text-[#b0f020]">Securing Your Spot...</h2>
+                        <h2 className="text-xl font-bold uppercase tracking-wider text-[#b0f020]">Confirming Trainer Session...</h2>
                         <p className="text-gray-400 text-xs tracking-widest uppercase">Processing Secure Payment</p>
                     </motion.div>
                 )}
@@ -172,16 +186,59 @@ const Booking = () => {
             <div className="pt-28 pb-20 px-6 md:px-12 max-w-6xl mx-auto">
                 {/* Back button */}
                 <div className="mb-8">
-                    <Link to="/gyms" className="inline-flex items-center gap-2 text-gray-400 hover:text-[#b0f020] transition-colors group">
+                    <Link to="/trainers" className="inline-flex items-center gap-2 text-gray-400 hover:text-[#b0f020] transition-colors group">
                         <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-                        <span className="text-sm font-semibold">Back to Gyms</span>
+                        <span className="text-sm font-semibold">Back to Trainers</span>
                     </Link>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                     
-                    {/* Left Column - Card Form & Mockup */}
+                    {/* Left Column - Date Selection & Payment Form */}
                     <div className="lg:col-span-7 space-y-8">
+
+                        {/* Date and Time Selector */}
+                        <div className="bg-[#121612] border border-[#1c221c] p-8 rounded-3xl shadow-xl">
+                            <h2 className="text-xl font-bold uppercase tracking-wide mb-6 flex items-center gap-2">
+                                <Calendar className="text-[#b0f020]" size={20} />
+                                Schedule Appointment
+                            </h2>
+
+                            <div className="space-y-6">
+                                {/* Date Input */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block">Start Date</label>
+                                    <input
+                                        type="date"
+                                        value={selectedDate}
+                                        min={new Date(Date.now() + 86400000).toISOString().split('T')[0]} // from tomorrow
+                                        onChange={(e) => setSelectedDate(e.target.value)}
+                                        className="w-full bg-black/40 border border-white/5 rounded-2xl py-4 px-6 text-sm font-bold text-white focus:outline-none focus:border-[#b0f020] transition-all"
+                                    />
+                                </div>
+
+                                {/* Time slots */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-3">Periods</label>
+                                    <div className="flex flex-wrap gap-2.5">
+                                        {timeSlots.map(time => (
+                                            <button
+                                                key={time}
+                                                type="button"
+                                                onClick={() => setSelectedTime(time)}
+                                                className={`px-5 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
+                                                    selectedTime === time
+                                                    ? 'bg-[#b0f020] text-black shadow-lg shadow-[#b0f020]/10'
+                                                    : 'bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white border border-white/5'
+                                                }`}
+                                            >
+                                                {time}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         
                         {/* Live Credit Card Mockup */}
                         <div className="perspective-1000">
@@ -266,7 +323,7 @@ const Booking = () => {
                         <div className="bg-[#121612] border border-[#1c221c] p-8 rounded-3xl relative overflow-hidden shadow-xl">
                             <h2 className="text-xl font-bold uppercase tracking-wide mb-6 flex items-center gap-2">
                                 <CreditCard className="text-[#b0f020]" size={20} />
-                                Payment details
+                                Payment Details
                             </h2>
 
                             <form onSubmit={handleSubmit} className="space-y-6">
@@ -336,7 +393,7 @@ const Booking = () => {
                                     type="submit"
                                     className="w-full bg-[#b0f020] hover:bg-[#9de018] text-black font-black uppercase tracking-widest text-sm py-5 rounded-2xl shadow-lg shadow-[#b0f020]/10 transition-all active:scale-[0.98] mt-4"
                                 >
-                                    Confirm Payment & Book
+                                    Confirm Session & Book
                                 </button>
                             </form>
                         </div>
@@ -352,14 +409,15 @@ const Booking = () => {
 
                             <div className="space-y-6 text-sm">
                                 
-                                {/* Gym Name Details */}
+                                {/* Trainer Name Details */}
                                 <div className="flex gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-[#1c221c] border border-white/5 flex items-center justify-center text-[#b0f020] shrink-0">
-                                        <MapPin size={20} />
+                                    <div className="w-16 h-16 rounded-2xl overflow-hidden bg-[#1c221c] border border-white/5 shrink-0">
+                                        <img src={trainerImage} alt={trainerName} className="w-full h-full object-cover grayscale opacity-90" />
                                     </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Gym Club</p>
-                                        <h3 className="font-bold text-base text-white">{gymName}</h3>
+                                    <div className="flex flex-col justify-center">
+                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider flex items-center gap-1"><User size={12} className="text-[#b0f020]" /> Expert Trainer</p>
+                                        <h3 className="font-bold text-base text-white">{trainerName}</h3>
+                                        <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mt-0.5">{trainerSpecialties?.[0] || "Coach"}</p>
                                     </div>
                                 </div>
 
@@ -370,34 +428,34 @@ const Booking = () => {
                                             <Calendar size={16} />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Date</p>
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Start Date</p>
                                             <p className="font-semibold text-xs text-gray-300">{selectedDate}</p>
                                         </div>
                                     </div>
 
                                     <div className="flex gap-3">
                                         <div className="w-10 h-10 rounded-lg bg-[#1c221c] border border-white/5 flex items-center justify-center text-gray-400 shrink-0">
-                                            <Activity size={16} />
+                                            <Clock size={16} />
                                         </div>
                                         <div>
-                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Type</p>
-                                            <p className="font-semibold text-xs text-gray-300 truncate">{sessionType}</p>
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Duration Period</p>
+                                            <p className="font-semibold text-xs text-gray-300">{selectedTime}</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="border-t border-white/5 pt-6 space-y-3">
                                     <div className="flex justify-between text-gray-400">
-                                        <span>Personal Training Session</span>
-                                        <span className="font-semibold font-mono text-white">${cleanPrice.toFixed(2)}</span>
+                                        <span>1-on-1 Specialist Coaching</span>
+                                        <span className="font-semibold font-mono text-white">{cleanPrice.toFixed(2)} EGP</span>
                                     </div>
                                     <div className="flex justify-between text-gray-400">
                                         <span>VAT / Tax (14%)</span>
-                                        <span className="font-semibold font-mono text-white">${tax.toFixed(2)}</span>
+                                        <span className="font-semibold font-mono text-white">{tax.toFixed(2)} EGP</span>
                                     </div>
                                     <div className="border-t border-white/5 pt-4 flex justify-between items-end">
                                         <span className="font-black text-sm uppercase tracking-wide">Total Amount</span>
-                                        <span className="text-2xl font-black font-mono text-[#b0f020]">${total.toFixed(2)}</span>
+                                        <span className="text-2xl font-black font-mono text-[#b0f020]">{total.toFixed(2)} EGP</span>
                                     </div>
                                 </div>
                             </div>
@@ -421,4 +479,4 @@ const Booking = () => {
     );
 };
 
-export default Booking;
+export default BookingTrainer;

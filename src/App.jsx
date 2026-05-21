@@ -32,6 +32,8 @@ const ConfirmationPayment = lazy(() => import('./pages/Shop/ConfirmationPayment'
 const TrainersBundles = lazy(() => import('./pages/TrainersBundles'));
 const GymBooking = lazy(() => import('./pages/GYM/Booking'));
 const ConfirmationBooking = lazy(() => import('./pages/GYM/ConfirmationBooking'));
+const BookingTrainer = lazy(() => import('./pages/Trainer/BookingTrainer'));
+const ConfirmationBookingTrainer = lazy(() => import('./pages/Trainer/ConfirmationBookingTrainer'));
 // Dashboards
 const TrainerDashboard = lazy(() => import('./pages/TrainerDashboard/Dashboard'));
 const MemberDashboard = lazy(() => import('./pages/MemberDashboard/Dashboard'));
@@ -39,6 +41,7 @@ const AdminDashboard = lazy(() => import('./pages/Admin/Dashboard'));
 const TrainerClients = lazy(() => import('./pages/TrainerDashboard/Clients'));
 const MyWorkouts = lazy(() => import('./pages/MemberDashboard/MyWorkouts'));
 const MyNutrition = lazy(() => import('./pages/MemberDashboard/MyNutrition'));
+const MyBookings = lazy(() => import('./pages/MemberDashboard/MyBookings'));
 
 // Loading component - Rotating Dumbbell
 const PageLoader = () => (
@@ -244,6 +247,8 @@ const App = () => {
                     <Route path="/gym/:id" element={<GymDetails />} />
                     <Route path="/gym/booking" element={<GymBooking />} />
                     <Route path="/gym/confirmation-booking" element={<ConfirmationBooking />} />
+                    <Route path="/trainer/booking" element={<BookingTrainer />} />
+                    <Route path="/trainer/confirmation-booking" element={<ConfirmationBookingTrainer />} />
                     {/* <Route path="/videos" element={<VideoLibrary />} /> */}
                     <Route path="/video/:id" element={<VideoDetails />} />
                     <Route path="/onboarding-videos" element={<OnBoardingVideos />} />
@@ -268,6 +273,7 @@ const App = () => {
                     <Route path="/member-dashboard" element={<MemberDashboard />} />
                     <Route path="/member-dashboard/workouts" element={<MyWorkouts />} />
                     <Route path="/member-dashboard/nutrition" element={<MyNutrition />} />
+                    <Route path="/member-dashboard/my-bookings" element={<MyBookings />} />
                     <Route path="/admin-dashboard" element={<AdminDashboard />} />
                 </Routes>
             </Suspense>

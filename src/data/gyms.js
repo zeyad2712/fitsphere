@@ -10,7 +10,7 @@ export const gymsData = [
         coords: [30.0444, 31.2357],
         rating: 4.9,
         reviews: 245,
-        price: "$80/mo",
+        price: "300 EGP/Session",
         images: [
             gym1,
             "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200",
@@ -53,7 +53,7 @@ export const gymsData = [
         coords: [30.0633, 31.2222],
         rating: 4.7,
         reviews: 189,
-        price: "$120/mo",
+        price: "250 EGP/Session",
         images: [
             gym2,
             "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200",
@@ -76,7 +76,7 @@ export const gymsData = [
         coords: [29.9602, 31.2569],
         rating: 4.8,
         reviews: 312,
-        price: "$65/mo",
+        price: "200 EGP/Session",
         images: [
             gym3,
             "https://images.unsplash.com/photo-1534258936925-c58bed479fcb?q=80&w=1200",
@@ -98,7 +98,7 @@ export const gymsData = [
         coords: [30.0299, 31.4913],
         rating: 4.9,
         reviews: 156,
-        price: "$150/mo",
+        price: "150 EGP/Session",
         images: [
             gym1,
             "https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1200",

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Search, ChevronDown, Star, X, ShoppingCart, Activity, Dumbbell, Shirt, ArrowRight, Heart } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, ChevronDown, Star, X, ShoppingCart, Activity, Dumbbell, Shirt, ArrowRight, Heart, CheckCircle2 } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 // import ShopHeader from '../components/ShopHeader';
 import Footer from '../../components/Footer';
@@ -14,6 +14,38 @@ const Shop = () => {
     const [selectedDietary, setSelectedDietary] = useState([]);
     const [sortBy, setSortBy] = useState("Popularity");
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+    const [addedItem, setAddedItem] = useState(null);
+    const [wishedItem, setWishedItem] = useState(null);
+
+    const handleAddToWishlist = (product) => {
+        const savedWishlist = localStorage.getItem('fitSphere_wishlist');
+        let wishlistItems = savedWishlist ? JSON.parse(savedWishlist) : [];
+        const existingItem = wishlistItems.find(item => item.id === product.id);
+        
+        if (!existingItem) {
+            wishlistItems.push(product);
+            localStorage.setItem('fitSphere_wishlist', JSON.stringify(wishlistItems));
+        }
+        
+        setWishedItem(product);
+        setTimeout(() => setWishedItem(null), 2000);
+    };
+
+    const handleAddToCart = (product) => {
+        const savedCart = localStorage.getItem('fitSphere_cart');
+        let cartItems = savedCart ? JSON.parse(savedCart) : [];
+        const existingItem = cartItems.find(item => item.id === product.id);
+        
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cartItems.push({ ...product, quantity: 1 });
+        }
+        
+        localStorage.setItem('fitSphere_cart', JSON.stringify(cartItems));
+        setAddedItem(product);
+        setTimeout(() => setAddedItem(null), 2000);
+    };
 
     // Filter Options
     const categories = [
@@ -84,8 +116,8 @@ const Shop = () => {
             {/* Announcement Bar */}
             <div className="bg-[#b0f020] text-[#0a0d0a] py-2 text-xs font-bold flex justify-center items-center gap-8 uppercase tracking-wider relative z-10 w-full overflow-hidden">
                 <div className="flex animate-[pulse_4s_ease-in-out_infinite] gap-8">
-                    <span className="flex items-center gap-2"><Star size={12} fill="currentColor" /> FREE SHIPPING ON ORDERS OVER $75</span>
-                    <span className="hidden sm:flex items-center gap-2"><Star size={12} fill="currentColor" /> NEW ARRIVALS: 2024 PERFORMANCE COLLECTION</span>
+                    {/* <span className="flex items-center gap-2"><Star size={12} fill="currentColor" /> FREE SHIPPING ON ORDERS OVER 75 EGP</span> */}
+                    <span className="hidden sm:flex items-center gap-2"><Star size={12} fill="currentColor" /> NEW ARRIVALS: 2026 PERFORMANCE COLLECTION</span>
                 </div>
             </div>
 
@@ -108,9 +140,9 @@ const Shop = () => {
                         <span className="bg-[#b0f020] text-black text-xs font-bold uppercase tracking-wider px-3 py-1 rounded w-fit mb-4">SUMMER SALE</span>
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Ignite Your Potential</h1>
                         <p className="text-gray-300 text-lg mb-8 max-w-md">Get up to 30% off on all pre-workout formulas and elite training equipment.</p>
-                        <button className="bg-[#b0f020] text-black px-6 py-3 rounded-full font-bold flex items-center gap-2 w-fit hover:bg-[#9de018] transition-colors">
+                        {/* <button className="bg-[#b0f020] text-black px-6 py-3 rounded-full font-bold flex items-center gap-2 w-fit hover:bg-[#9de018] transition-colors">
                             Shop The Collection <ArrowRight size={18} />
-                        </button>
+                        </button> */}
                     </div>
                 </div>
 
@@ -175,9 +207,9 @@ const Shop = () => {
                                     className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-[#b0f020]"
                                 />
                                 <div className="flex justify-between text-xs text-gray-500 mt-2 font-medium">
-                                    <span>$0</span>
-                                    <span className="text-white bg-[#1c221c] px-2 py-0.5 rounded">${maxPrice}</span>
-                                    <span>$150+</span>
+                                    <span>0 EGP</span>
+                                    <span className="text-white bg-[#1c221c] px-2 py-0.5 rounded">{maxPrice} EGP</span>
+                                    <span>150+ EGP</span>
                                 </div>
                             </div>
 
@@ -268,8 +300,11 @@ const Shop = () => {
                                         )}
 
                                         {/* Wishlist */}
-                                        <button className="absolute top-4 right-4 z-1000 p-2 rounded-full bg-black/40 backdrop-blur border border-white/5 text-gray-300 hover:text-white hover:bg-black/60 transition-colors">
-                                            <Heart size={16} />
+                                        <button 
+                                            onClick={() => handleAddToWishlist(product)}
+                                            className="absolute top-4 right-4 z-1000 p-2 rounded-full bg-black/40 backdrop-blur border border-white/5 text-gray-300 hover:text-white hover:bg-black/60 transition-colors"
+                                        >
+                                            <Heart size={16} fill={wishedItem?.id === product.id ? "#ef4444" : "transparent"} className={wishedItem?.id === product.id ? "text-red-500" : ""} />
                                         </button>
 
                                         {/* Image */}
@@ -296,18 +331,21 @@ const Shop = () => {
                                             <div className="flex items-center justify-between border-t border-[#1c221c] pt-4 mt-auto gap-4">
                                                 <div className="flex flex-col">
                                                     <div className="flex items-center gap-2">
-                                                        <span className="text-xl font-bold">${product.price.toFixed(2)}</span>
+                                                        <span className="text-xl font-bold">{product.price.toFixed(2)} EGP</span>
                                                     </div>
                                                     {product.originalPrice && (
-                                                        <span className="text-xs text-gray-500 line-through">${product.originalPrice.toFixed(2)}</span>
+                                                        <span className="text-xs text-gray-500 line-through">{product.originalPrice.toFixed(2)} EGP</span>
                                                     )}
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <Link to={`/product/${product.id}`} className="px-4 py-2 bg-[#1c221c] text-white text-xs font-bold rounded-lg hover:bg-[#2a352a] transition-colors border border-white/5">
                                                         View Details
                                                     </Link>
-                                                    <button className="h-9 w-9 flex items-center justify-center rounded-lg bg-[#b0f020] text-black hover:bg-[#9de018] shadow-lg shadow-[#b0f020]/20 transition-all transform hover:scale-105 shrink-0">
-                                                        <ShoppingCart size={16} />
+                                                    <button 
+                                                        onClick={() => handleAddToCart(product)}
+                                                        className="h-9 w-9 flex items-center justify-center rounded-lg bg-[#b0f020] text-black hover:bg-[#9de018] shadow-lg shadow-[#b0f020]/20 transition-all transform hover:scale-105 shrink-0"
+                                                    >
+                                                        {addedItem?.id === product.id ? <CheckCircle2 size={16} /> : <ShoppingCart size={16} />}
                                                     </button>
                                                 </div>
                                             </div>
@@ -335,6 +373,42 @@ const Shop = () => {
                     </div>
                 </div>
             </motion.div>
+
+            {/* Added to Cart Popup Toast */}
+            <AnimatePresence>
+                {addedItem && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 50, scale: 0.9 }}
+                        className="fixed top-8 right-8 z-50 bg-[#b0f020] text-black px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 font-bold"
+                    >
+                        <CheckCircle2 size={28} />
+                        <div>
+                            <p className="text-lg">Added to Cart!</p>
+                            <p className="text-sm font-medium opacity-80">1x {addedItem.name}</p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Added to Wishlist Popup Toast */}
+            <AnimatePresence>
+                {wishedItem && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 50, scale: 0.9 }}
+                        className="fixed top-28 right-8 z-50 bg-[#121612] border border-white/10 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 font-bold"
+                    >
+                        <Heart size={28} className="text-red-500" fill="#ef4444" />
+                        <div>
+                            <p className="text-lg">Added to Wishlist!</p>
+                            <p className="text-sm font-medium opacity-80">{wishedItem.name}</p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <Footer />
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, useMotionValue, useTransform, useInView, animate } from 'framer-motion';
 import { MapPin, Star, Award, ShieldCheck, ArrowLeft, Heart, Share2 } from 'lucide-react';
 import Navbar from '../../components/Navbar';
@@ -38,6 +38,7 @@ const Counter = ({ value }) => {
 
 const TrainerProfile = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('About');
 
     // Find trainer or return mock data if not found (for robustness)
@@ -61,14 +62,14 @@ const TrainerProfile = () => {
                         <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
                         <span className="font-medium">Back to trainers</span>
                     </Link>
-                    <div className="flex items-center gap-4">
+                    {/* <div className="flex items-center gap-4">
                         <button className="p-2.5 rounded-full bg-[#1c221c] border border-white/5 hover:bg-[#252a25] transition-colors">
                             <Share2 size={18} />
                         </button>
                         <button className="p-2.5 rounded-full bg-[#1c221c] border border-white/5 hover:bg-[#252a25] transition-colors text-red-500">
                             <Heart size={18} />
                         </button>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Main Content Layout */}
@@ -110,10 +111,19 @@ const TrainerProfile = () => {
                                         <span className="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-1">Session Rate</span>
                                         <div className="flex items-baseline gap-1">
                                             <span className="text-3xl font-black text-white">${trainer.price}</span>
-                                            <span className="text-gray-500 text-sm font-bold">/Session</span>
+                                            <span className="text-gray-500 text-sm font-bold">/Month</span>
                                         </div>
                                     </div>
                                     <button
+                                        onClick={() => navigate('/trainer/booking', {
+                                            state: {
+                                                trainerId: trainer.id,
+                                                trainerName: trainer.name,
+                                                trainerPrice: trainer.price,
+                                                trainerSpecialties: trainer.specialties,
+                                                trainerImage: trainer.image
+                                            }
+                                        })}
                                         className="bg-[#b0f020] text-[#0f120f] px-10 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-[#9de018] hover:shadow-[0_0_25px_rgba(176,240,32,0.4)] transition-all transform hover:-translate-y-1 w-full sm:w-auto"
                                     >
                                         Book a Session

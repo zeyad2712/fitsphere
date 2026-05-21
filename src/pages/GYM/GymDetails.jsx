@@ -237,14 +237,14 @@ const GymDetails = () => {
                         <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
                         <span className="font-medium">Back to discovery</span>
                     </Link>
-                    <div className="flex items-center gap-4">
+                    {/* <div className="flex items-center gap-4">
                         <button className="p-2.5 rounded-full bg-[#1c221c] border border-white/5 hover:bg-[#252a25] transition-colors">
                             <Share2 size={18} />
                         </button>
                         <button className="p-2.5 rounded-full bg-[#1c221c] border border-white/5 hover:bg-[#252a25] transition-colors text-red-500">
                             <Heart size={18} />
                         </button>
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Main Content Layout */}

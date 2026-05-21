@@ -11,7 +11,7 @@ import {
     Info,
     ChevronRight
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { productsData } from '../../data/shop';
@@ -19,11 +19,19 @@ import { productsData } from '../../data/shop';
 const CheckOutPage = () => {
     const navigate = useNavigate();
 
-    // Mock cart data (simulating state passed from cart)
-    const cartItems = [
-        { ...productsData[0], quantity: 1 },
-        { ...productsData[1], quantity: 2 }
-    ];
+    const location = useLocation();
+    const buyNowItem = location.state?.buyNowItem;
+
+    // Use buyNowItem if navigated from 'Buy It Now', else use localStorage cart
+    const [cartItems] = useState(() => {
+        if (buyNowItem) return [buyNowItem];
+        const savedCart = localStorage.getItem('fitSphere_cart');
+        if (savedCart) return JSON.parse(savedCart);
+        return [
+            { ...productsData[0], quantity: 1 },
+            { ...productsData[1], quantity: 2 }
+        ];
+    });
 
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     const shipping = subtotal > 75 ? 0 : 15;

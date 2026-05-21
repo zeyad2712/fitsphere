@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, ArrowRight, CreditCard, ShieldCheck, Truck } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -7,12 +7,14 @@ import Footer from '../../components/Footer';
 import { productsData } from '../../data/shop';
 
 const Cart = () => {
-    // Initial mock cart items (first 3 items from productsData)
-    const [cartItems, setCartItems] = useState([
-        { ...productsData[0], quantity: 1 },
-        { ...productsData[1], quantity: 2 },
-        { ...productsData[2], quantity: 1 }
-    ]);
+    const [cartItems, setCartItems] = useState(() => {
+        const savedCart = localStorage.getItem('fitSphere_cart');
+        return savedCart ? JSON.parse(savedCart) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('fitSphere_cart', JSON.stringify(cartItems));
+    }, [cartItems]);
 
     const [promoCode, setPromoCode] = useState('');
     const [isApplied, setIsApplied] = useState(false);
@@ -161,22 +163,22 @@ const Cart = () => {
                                 <div className="space-y-4 mb-8">
                                     <div className="flex justify-between text-gray-400 font-medium">
                                         <span>Subtotal</span>
-                                        <span className="text-white">${subtotal.toFixed(2)}</span>
+                                        <span className="text-white">{subtotal.toFixed(2)} EGP</span>
                                     </div>
                                     <div className="flex justify-between text-gray-400 font-medium">
-                                        <span>Estimated Tax (10%)</span>
-                                        <span className="text-white">${tax.toFixed(2)}</span>
+                                        <span>Fees (10%)</span>
+                                        <span className="text-white">{tax.toFixed(2)} EGP</span>
                                     </div>
-                                    <div className="flex justify-between text-gray-400 font-medium">
+                                    {/* <div className="flex justify-between text-gray-400 font-medium">
                                         <span>Shipping</span>
                                         <span className={shipping === 0 ? "text-[#b0f020] font-bold" : "text-white"}>
-                                            {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                                            {shipping === 0 ? "FREE" : `${shipping.toFixed(2)} EGP`}
                                         </span>
-                                    </div>
+                                    </div> */}
                                     {isApplied && (
                                         <div className="flex justify-between text-[#b0f020] font-medium">
                                             <span>Discount (15%)</span>
-                                            <span>-${discount.toFixed(2)}</span>
+                                            <span>-{discount.toFixed(2)} EGP</span>
                                         </div>
                                     )}
                                     <div className="h-px bg-white/5 my-6"></div>
@@ -184,10 +186,10 @@ const Cart = () => {
                                         <span className="text-lg font-bold">Total</span>
                                         <div className="text-right">
                                             <div className="text-3xl font-black text-[#b0f020] tracking-tighter italic">
-                                                ${total.toFixed(2)}
+                                                {total.toFixed(2)} EGP
                                             </div>
                                             <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                                                USD Inc. VAT
+                                                EGP Inc. VAT
                                             </span>
                                         </div>
                                     </div>

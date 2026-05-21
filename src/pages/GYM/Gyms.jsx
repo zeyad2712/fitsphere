@@ -149,7 +149,7 @@ const Gyms = () => {
                                                 </div>
                                             </div>
                                             <div className="flex justify-between items-center pt-4 border-t border-[#1c221c]">
-                                                <span className="text-[#b0f020] font-bold">{gym.price}</span>
+                                                <span className="text-[#b0f020] font-bold">{gym.price} </span>
                                                 <Link to={`/gym/${gym.id}`} className="px-4 py-2 bg-[#b0f020] rounded-lg text-[#0f120f] text-[10px] font-black uppercase tracking-widest hover:bg-[#9de018] hover:shadow-[0_0_15px_rgba(176,240,32,0.3)] transition-all transform hover:-translate-y-0.5">VIEW DETAILS </Link>
                                             </div>
                                         </div>

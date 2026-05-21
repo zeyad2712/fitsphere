@@ -1,18 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ShoppingCart, Trash2, ArrowRight, ShoppingBag, Star, ArrowLeft } from 'lucide-react';
+import { Heart, ShoppingCart, Trash2, ArrowRight, ShoppingBag, Star, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { productsData } from '../../data/shop';
 
 const Wishlist = () => {
-    // Initial mock wishlist items (items 4, 5, 6 from productsData)
-    const [wishlistItems, setWishlistItems] = useState([
-        { ...productsData[3] },
-        { ...productsData[4] },
-        { ...productsData[5] }
-    ]);
+    // Load wishlist items from localStorage
+    const [wishlistItems, setWishlistItems] = useState(() => {
+        const saved = localStorage.getItem('fitSphere_wishlist');
+        if (saved) return JSON.parse(saved);
+        return [
+            { ...productsData[3] },
+            { ...productsData[4] },
+            { ...productsData[5] }
+        ];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('fitSphere_wishlist', JSON.stringify(wishlistItems));
+    }, [wishlistItems]);
+
+    const [addedItem, setAddedItem] = useState(null);
+
+    const handleAddToCart = (product) => {
+        const savedCart = localStorage.getItem('fitSphere_cart');
+        let cartItems = savedCart ? JSON.parse(savedCart) : [];
+        const existingItem = cartItems.find(item => item.id === product.id);
+        
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cartItems.push({ ...product, quantity: 1 });
+        }
+        
+        localStorage.setItem('fitSphere_cart', JSON.stringify(cartItems));
+        setAddedItem(product);
+        setTimeout(() => setAddedItem(null), 2000);
+    };
 
     const removeItem = (id) => {
         setWishlistItems(prev => prev.filter(item => item.id !== id));
@@ -92,7 +118,7 @@ const Wishlist = () => {
                                         {/* Remove Button (Floating) */}
                                         <button
                                             onClick={() => removeItem(item.id)}
-                                            className="absolute top-6 right-6 w-10 h-10 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl flex items-center justify-center text-gray-400 hover:text-red-500 transition-all hover:scale-110"
+                                            className="absolute top-6 right-6 z-1000 w-10 h-10 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl flex items-center justify-center text-gray-400 hover:text-red-500 transition-all hover:scale-110"
                                             title="Remove from Wishlist"
                                         >
                                             <Trash2 size={18} />
@@ -139,9 +165,12 @@ const Wishlist = () => {
                                                 )}
                                             </div>
 
-                                            <button className="flex items-center gap-3 bg-[#b0f020] text-black px-6 py-3 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-[#9de018] shadow-[0_10px_20px_rgba(176,240,32,0.1)] hover:shadow-[0_10px_20px_rgba(176,240,32,0.2)] transition-all transform hover:-translate-y-1">
-                                                <ShoppingCart size={16} />
-                                                Add to Cart
+                                            <button 
+                                                onClick={() => handleAddToCart(item)}
+                                                className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-black uppercase tracking-widest text-xs shadow-[0_10px_20px_rgba(176,240,32,0.1)] hover:shadow-[0_10px_20px_rgba(176,240,32,0.2)] transition-all transform hover:-translate-y-1 ${addedItem?.id === item.id ? 'bg-white text-black' : 'bg-[#b0f020] text-black hover:bg-[#9de018]'}`}
+                                            >
+                                                {addedItem?.id === item.id ? <CheckCircle2 size={16} /> : <ShoppingCart size={16} />}
+                                                {addedItem?.id === item.id ? 'Added' : 'Add to Cart'}
                                             </button>
                                         </div>
                                     </div>
@@ -191,6 +220,24 @@ const Wishlist = () => {
                     </div>
                 )}
             </motion.main>
+
+            {/* Added to Cart Popup Toast */}
+            <AnimatePresence>
+                {addedItem && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 50, scale: 0.9 }}
+                        className="fixed top-8 right-8 z-50 bg-[#b0f020] text-black px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 font-bold"
+                    >
+                        <CheckCircle2 size={28} />
+                        <div>
+                            <p className="text-lg">Added to Cart!</p>
+                            <p className="text-sm font-medium opacity-80">1x {addedItem.name}</p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <Footer />
         </div>

@@ -21,9 +21,9 @@ const SidebarDashboard = ({ isSidebarOpen, role = 'trainer', activeTab, setActiv
         ],
         member: [
             { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, path: '/member-dashboard' },
+            { id: 'bookings', label: 'My Bookings', icon: Calendar, path: '/member-dashboard/my-bookings' },
             { id: 'workouts', label: 'My Workouts', icon: Dumbbell, path: '/member-dashboard/workouts' },
             { id: 'nutrition', label: 'Nutrition', icon: BarChart3, path: '/member-dashboard/nutrition' },
-            { id: 'bookings', label: 'My Bookings', icon: Calendar, path: '/member-dashboard/my-bookings' },
             // { id: 'messages', label: 'Messages', icon: MessageSquare, path: '#' },
             { id: 'settings', label: 'Settings', icon: Settings, path: '#' },
         ],

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ShieldCheck, Truck, CheckCircle2, ChevronRight, ShoppingCart, Minus, Plus, ArrowRight } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 // import ShopHeader from '../components/ShopHeader';
@@ -17,6 +17,28 @@ const ProductDetails = () => {
 
     const [activeTab, setActiveTab] = useState('Description');
     const [quantity, setQuantity] = useState(1);
+    const [isAdded, setIsAdded] = useState(false);
+    const navigate = useNavigate();
+
+    const handleAddToCart = () => {
+        const savedCart = localStorage.getItem('fitSphere_cart');
+        let cartItems = savedCart ? JSON.parse(savedCart) : [];
+        const existingItem = cartItems.find(item => item.id === product.id);
+        
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cartItems.push({ ...product, quantity });
+        }
+        
+        localStorage.setItem('fitSphere_cart', JSON.stringify(cartItems));
+        setIsAdded(true);
+        setTimeout(() => setIsAdded(false), 2000);
+    };
+
+    const handleBuyNow = () => {
+        navigate('/checkout', { state: { buyNowItem: { ...product, quantity } } });
+    };
 
     // Mock options based on category to match design dynamically
     const [selectedFlavor, setSelectedFlavor] = useState('Double Chocolate');
@@ -100,10 +122,10 @@ const ProductDetails = () => {
                         </div>
 
                         <div className="flex flex-wrap items-end gap-4 mb-8">
-                            <span className="text-4xl mb-1 font-bold text-[#b0f020]">${product.price.toFixed(2)}</span>
+                            <span className="text-4xl mb-1 font-bold text-[#b0f020]">{product.price.toFixed(2)} EGP</span>
                             {product.originalPrice && (
                                 <>
-                                    <span className="text-lg text-gray-500 line-through mb-1.5">${product.originalPrice.toFixed(2)}</span>
+                                    <span className="text-lg text-gray-500 line-through mb-1.5">{product.originalPrice.toFixed(2)} EGP</span>
                                     <span className="bg-[#1c221c] text-[#b0f020] text-xs font-bold px-2 py-1 rounded mb-2">
                                         SAVE {Math.round((1 - product.price / product.originalPrice) * 100)}%
                                     </span>
@@ -171,12 +193,13 @@ const ProductDetails = () => {
                                     <Plus size={16} />
                                 </button>
                             </div>
-                            <button className="flex-1 bg-[#b0f020] text-[#0a0d0a] font-bold rounded-full py-3 px-6 flex items-center justify-center gap-2 hover:bg-[#9de018] shadow-[0_0_20px_rgba(176,240,32,0.2)] transition-all transform hover:-translate-y-0.5">
-                                <ShoppingCart size={18} /> Add to Cart
+                            <button onClick={handleAddToCart} className={`flex-1 font-bold rounded-full py-3 px-6 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(176,240,32,0.2)] transition-all transform hover:-translate-y-0.5 ${isAdded ? 'bg-white text-black hover:bg-gray-200' : 'bg-[#b0f020] text-[#0a0d0a] hover:bg-[#9de018]'}`}>
+                                {isAdded ? <CheckCircle2 size={18} /> : <ShoppingCart size={18} />} 
+                                {isAdded ? 'Added to Cart' : 'Add to Cart'}
                             </button>
                         </div>
 
-                        <button className="w-full bg-white text-black font-bold rounded-full py-4 px-6 hover:bg-gray-200 transition-colors mb-8 text-sm">
+                        <button onClick={handleBuyNow} className="w-full bg-white text-black font-bold rounded-full py-4 px-6 hover:bg-gray-200 transition-colors mb-8 text-sm">
                             Buy It Now
                         </button>
 
@@ -342,6 +365,24 @@ const ProductDetails = () => {
                     </div>
                 </div>
             </motion.div>
+
+            {/* Added to Cart Popup Toast */}
+            <AnimatePresence>
+                {isAdded && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 50, scale: 0.9 }}
+                        className="fixed top-8 right-8 z-50 bg-[#b0f020] text-black px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 font-bold"
+                    >
+                        <CheckCircle2 size={28} />
+                        <div>
+                            <p className="text-lg">Added to Cart!</p>
+                            <p className="text-sm font-medium opacity-80">{quantity}x {product.name}</p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <Footer />
         </div>
