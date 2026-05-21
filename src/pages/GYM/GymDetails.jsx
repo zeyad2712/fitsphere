@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     MapPin, Star, Clock, ArrowLeft, Share2, Heart,
@@ -38,22 +38,25 @@ const IconMap = {
     Dumbbell: Dumbbell
 };
 
-const BookingModal = ({ isOpen, onClose, gymName }) => {
-    const [selectedDate, setSelectedDate] = useState(12);
+const BookingModal = ({ isOpen, onClose, gymName, gymPrice }) => {
+    const navigate = useNavigate();
+    const [selectedDate, setSelectedDate] = useState(() => {
+        return new Date().toISOString().split('T')[0];
+    });
     const [sessionType, setSessionType] = useState('Personal Training');
     const [selectedTime, setSelectedTime] = useState('10:30 AM');
 
-    const days = [
-        { day: 'M', date: 10 },
-        { day: 'T', date: 11 },
-        { day: 'W', date: 12 },
-        { day: 'T', date: 13 },
-        { day: 'F', date: 14 },
-        { day: 'S', date: 15 },
-        { day: 'S', date: 16 },
-    ];
-
-    const times = ['08:00 AM', '10:30 AM', '01:00 PM', '03:30 PM', '05:00 PM', '06:30 PM'];
+    const handleBookClick = () => {
+        onClose();
+        navigate('/gym/booking', {
+            state: {
+                gymName,
+                gymPrice,
+                selectedDate,
+                sessionType
+            }
+        });
+    };
 
     return (
         <AnimatePresence>
@@ -90,6 +93,7 @@ const BookingModal = ({ isOpen, onClose, gymName }) => {
                                     <input
                                         type="date"
                                         className="w-full bg-[#121612] border border-white/5 rounded-2xl py-4 px-6 text-sm font-bold text-white focus:outline-none focus:border-[#b0f020] transition-all cursor-pointer [color-scheme:dark]"
+                                        value={selectedDate}
                                         onChange={(e) => setSelectedDate(e.target.value)}
                                         min={new Date().toISOString().split('T')[0]}
                                     />
@@ -107,32 +111,12 @@ const BookingModal = ({ isOpen, onClose, gymName }) => {
                                 </div>
                             </div>
 
-                            {/* Time Picker */}
-                            {/* <div className="mb-10">
-                                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Select Time</h3>
-                                <div className="grid grid-cols-3 gap-3">
-                                    {times.map(time => (
-                                        <button 
-                                            key={time}
-                                            onClick={() => setSelectedTime(time)}
-                                            className={`py-3 rounded-xl border text-[10px] font-bold transition-all ${
-                                                selectedTime === time 
-                                                ? 'bg-[#b0f020]/10 border-[#b0f020] text-[#b0f020]' 
-                                                : 'border-[#1c221c] text-gray-500 hover:border-gray-700'
-                                            }`}
-                                        >
-                                            {time}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div> */}
-
-                            <button className="w-full bg-[#b0f020] text-[#0f120f] py-5 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#9de018] transition-all shadow-lg active:scale-[0.98]">
+                            <button 
+                                onClick={handleBookClick}
+                                className="w-full bg-[#b0f020] text-[#0f120f] py-5 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-[#9de018] transition-all shadow-lg active:scale-[0.98]"
+                            >
                                 Book Session
                             </button>
-                            <p className="text-[10px] text-center text-gray-600 mt-4 leading-relaxed">
-                                No credit card required. Cancellation up to 24h before.
-                            </p>
                         </div>
                     </motion.div>
                 </div>
@@ -235,6 +219,7 @@ const GymDetails = () => {
                 isOpen={isBookingOpen}
                 onClose={() => setIsBookingOpen(false)}
                 gymName={gym.name}
+                gymPrice={gym.price}
             />
 
             <MapModal

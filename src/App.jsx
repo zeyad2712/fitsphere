@@ -30,6 +30,8 @@ const Wishlist = lazy(() => import('./pages/Shop/Wishlist'));
 const CheckOutPage = lazy(() => import('./pages/Shop/CheckOutPage'));
 const ConfirmationPayment = lazy(() => import('./pages/Shop/ConfirmationPayment'));
 const TrainersBundles = lazy(() => import('./pages/TrainersBundles'));
+const GymBooking = lazy(() => import('./pages/GYM/Booking'));
+const ConfirmationBooking = lazy(() => import('./pages/GYM/ConfirmationBooking'));
 // Dashboards
 const TrainerDashboard = lazy(() => import('./pages/TrainerDashboard/Dashboard'));
 const MemberDashboard = lazy(() => import('./pages/MemberDashboard/Dashboard'));
@@ -240,6 +242,8 @@ const App = () => {
                     <Route path="/shop" element={<Shop />} />
                     <Route path="/product/:id" element={<ProductDetails />} />
                     <Route path="/gym/:id" element={<GymDetails />} />
+                    <Route path="/gym/booking" element={<GymBooking />} />
+                    <Route path="/gym/confirmation-booking" element={<ConfirmationBooking />} />
                     {/* <Route path="/videos" element={<VideoLibrary />} /> */}
                     <Route path="/video/:id" element={<VideoDetails />} />
                     <Route path="/onboarding-videos" element={<OnBoardingVideos />} />
