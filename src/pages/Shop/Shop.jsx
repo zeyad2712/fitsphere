@@ -21,12 +21,12 @@ const Shop = () => {
         const savedWishlist = localStorage.getItem('fitSphere_wishlist');
         let wishlistItems = savedWishlist ? JSON.parse(savedWishlist) : [];
         const existingItem = wishlistItems.find(item => item.id === product.id);
-        
+
         if (!existingItem) {
             wishlistItems.push(product);
             localStorage.setItem('fitSphere_wishlist', JSON.stringify(wishlistItems));
         }
-        
+
         setWishedItem(product);
         setTimeout(() => setWishedItem(null), 2000);
     };
@@ -35,13 +35,13 @@ const Shop = () => {
         const savedCart = localStorage.getItem('fitSphere_cart');
         let cartItems = savedCart ? JSON.parse(savedCart) : [];
         const existingItem = cartItems.find(item => item.id === product.id);
-        
+
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
             cartItems.push({ ...product, quantity: 1 });
         }
-        
+
         localStorage.setItem('fitSphere_cart', JSON.stringify(cartItems));
         setAddedItem(product);
         setTimeout(() => setAddedItem(null), 2000);
@@ -300,7 +300,7 @@ const Shop = () => {
                                         )}
 
                                         {/* Wishlist */}
-                                        <button 
+                                        <button
                                             onClick={() => handleAddToWishlist(product)}
                                             className="absolute top-4 right-4 z-1000 p-2 rounded-full bg-black/40 backdrop-blur border border-white/5 text-gray-300 hover:text-white hover:bg-black/60 transition-colors"
                                         >
@@ -341,7 +341,7 @@ const Shop = () => {
                                                     <Link to={`/product/${product.id}`} className="px-4 py-2 bg-[#1c221c] text-white text-xs font-bold rounded-lg hover:bg-[#2a352a] transition-colors border border-white/5">
                                                         View Details
                                                     </Link>
-                                                    <button 
+                                                    <button
                                                         onClick={() => handleAddToCart(product)}
                                                         className="h-9 w-9 flex items-center justify-center rounded-lg bg-[#b0f020] text-black hover:bg-[#9de018] shadow-lg shadow-[#b0f020]/20 transition-all transform hover:scale-105 shrink-0"
                                                     >
