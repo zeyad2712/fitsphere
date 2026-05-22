@@ -169,7 +169,7 @@ const Trainers = () => {
                             </div>
 
                             {/* Minimum Rating */}
-                            <div>
+                            {/* <div>
                                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Minimum Rating</h3>
                                 <div className="space-y-2">
                                     <button
@@ -187,10 +187,10 @@ const Trainers = () => {
                                         4.0 & up
                                     </button>
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* Availability */}
-                            <div>
+                            {/* <div>
                                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Availability</h3>
                                 <div className="grid grid-cols-2 gap-2">
                                     {availabilityOptions.map(option => (
@@ -203,7 +203,7 @@ const Trainers = () => {
                                         </button>
                                     ))}
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* Mobile Show Results Button */}
                             <div className="md:hidden pt-4 pb-2 border-t border-[#1c221c]">

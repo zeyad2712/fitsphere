@@ -214,7 +214,7 @@ const Shop = () => {
                             </div>
 
                             {/* Dietary Needs */}
-                            <div>
+                            {/* <div>
                                 <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Dietary Needs</h3>
                                 <div className="space-y-3">
                                     {dietaryOptions.map(option => (
@@ -234,7 +234,7 @@ const Shop = () => {
                                         </label>
                                     ))}
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* Mobile Show Results Button */}
                             <div className="md:hidden pt-4 pb-2 border-t border-[#1c221c]">
