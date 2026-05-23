@@ -221,7 +221,7 @@ const Profile = () => {
                                             { label: 'Date of Birth', value: userData.dob, icon: <Calendar size={16} /> },
                                             { label: 'Current Height', value: userData.height, icon: <Ruler /> },
                                             { label: 'Current Weight', value: userData.weight, icon: <Weight /> },
-                                            { label: 'Experience Level', value: userData.level, icon: <Activity /> },
+                                            // { label: 'Experience Level', value: userData.level, icon: <Activity /> },
                                             { label: 'Fitness Goal', value: userData.goal, icon: <Settings /> },
                                         ].map((item, i) => (
                                             <div key={i} className="bg-[#151a15] p-5 md:p-6 rounded-3xl border border-white/5 hover:border-[#b0f020]/20 transition-all">
