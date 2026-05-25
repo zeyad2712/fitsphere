@@ -108,9 +108,21 @@ const TrainerProfile = () => {
 
                                 <div className="mt-8 flex flex-col sm:flex-row items-center gap-6">
                                     <div className="flex flex-col">
-                                        <span className="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-1">Session Rate</span>
-                                        <div className="flex items-baseline gap-1">
-                                            <span className="text-3xl font-black text-white">${trainer.price}</span>
+                                        <span className="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-1 flex items-center gap-2">
+                                            Discount Rate
+                                            {trainer.discountPercentage && (
+                                                <span className="bg-red-500/10 text-red-400 text-[9px] px-1.5 py-0.5 rounded border border-red-500/20">-{trainer.discountPercentage}%</span>
+                                            )}
+                                        </span>
+                                        <div className="flex items-baseline gap-2">
+                                            {trainer.discountPercentage ? (
+                                                <>
+                                                    <span className="text-xl font-bold text-gray-500 line-through">{trainer.price} EGP</span>
+                                                    <span className="text-3xl font-black text-[#b0f020]">{Math.round(trainer.price * (1 - trainer.discountPercentage / 100))} EGP</span>
+                                                </>
+                                            ) : (
+                                                <span className="text-3xl font-black text-white">{trainer.price} EGP</span>
+                                            )}
                                             <span className="text-gray-500 text-sm font-bold">/Month</span>
                                         </div>
                                     </div>
@@ -119,7 +131,7 @@ const TrainerProfile = () => {
                                             state: {
                                                 trainerId: trainer.id,
                                                 trainerName: trainer.name,
-                                                trainerPrice: trainer.price,
+                                                trainerPrice: trainer.discountPercentage ? Math.round(trainer.price * (1 - trainer.discountPercentage / 100)) : trainer.price,
                                                 trainerSpecialties: trainer.specialties,
                                                 trainerImage: trainer.image
                                             }

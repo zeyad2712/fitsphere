@@ -19,9 +19,17 @@ import {
     Edit3,
     LineChart,
     Phone,
-    LayoutDashboard
+    LayoutDashboard,
+    DollarSign,
+    Info,
+    Building,
+    UserCheck,
+    MapPin,
+    Map,
+    Users,
+    LogOut
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -31,18 +39,63 @@ const Profile = () => {
     const [modalType, setModalType] = useState('workout'); // 'workout', 'nutrition', 'edit-profile'
     const [editingItem, setEditingItem] = useState(null);
 
-    // Mock User Data
+    const location = useLocation();
+    const navigate = useNavigate();
+    const passedData = location.state?.userData || {};
+    const [successMessage, setSuccessMessage] = useState(location.state?.successMessage || null);
+
+    // Analytics State
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analysisData, setAnalysisData] = useState(null);
+
+    const handleAnalyzeLogs = () => {
+        setIsAnalyzing(true);
+        setTimeout(() => {
+            setAnalysisData({
+                totalWorkouts: workoutLogs.length,
+                totalCalories: nutritionLogs.reduce((acc, log) => acc + (parseInt(log.calories) || 0), 0),
+                avgWorkoutWeight: '90kg',
+                topExercise: 'Barbell Squat',
+                proteinAvg: '45g'
+            });
+            setIsAnalyzing(false);
+        }, 2000);
+    };
+
+    // Helper to safely extract string from potentially nested API response objects
+    const extractValue = (data, key) => {
+        if (!data) return null;
+        if (typeof data === 'object') {
+            // If the backend returns an object for this field (like phone: {id: 22, phone: '...'}),
+            // we try to extract the value by the same key, or fallback to the first string value we find.
+            return data[key] || data.value || data.name || JSON.stringify(data);
+        }
+        return data;
+    };
+
+    // Mock User Data combined with passed Data
     const [userData, setUserData] = useState({
-        name: 'Ziad Waleed',
-        email: 'ziad.waleed@example.com',
-        phone: '+20 123 456 7890',
-        dob: '1999-05-15',
-        role: 'member',
-        goal: 'Hypertrophy',
-        weight: '78kg',
-        height: '182cm',
+        name: extractValue(passedData.name, 'name') || extractValue(passedData.gymName, 'gymName') || 'Ziad Waleed',
+        email: extractValue(passedData.email, 'email') || extractValue(passedData.gymEmail, 'gymEmail') || 'ziad.waleed@example.com',
+        phone: extractValue(passedData.phone, 'phone') || extractValue(passedData.gymPhone, 'phone') || '+20 123 456 7890',
+        dob: extractValue(passedData.birth_date, 'birth_date') || '1999-05-15',
+        role: passedData.role || 'member',
+        goal: passedData.fitnessGoal || 'Hypertrophy',
+        weight: passedData.weight ? `${passedData.weight}kg` : '78kg',
+        height: passedData.height ? `${passedData.height}cm` : '182cm',
         age: '24',
-        level: 'Intermediate'
+        level: 'Intermediate',
+        experienceYears: passedData.experienceYears || '5',
+        specialization: passedData.specalization || passedData.specialization || 'Yoga, HIIT',
+        pricePerMonth: passedData.fair || passedData.pricePerMonth || '50',
+        bio: passedData.BIO || passedData.bio || 'Experienced trainer.',
+        managerName: passedData.managerName || 'John Manager',
+        managerEmail: passedData.managerEmail || 'manager@gym.com',
+        city: passedData.city || 'Los Angeles',
+        streetName: passedData.streetName || 'Sunset Blvd',
+        crowdLevel: passedData.Crowd || 'low',
+        pricePerSession: passedData.fair || passedData.pricePerSession || '15',
+        description: passedData.description || 'A great place to work out.'
     });
 
     // Mock Workout Logs
@@ -98,6 +151,25 @@ const Profile = () => {
         setIsModalOpen(true);
     };
 
+    const handleLogout = async () => {
+        try {
+            await fetch('https://recess-throwaway-unchanged.ngrok-free.dev/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'ngrok-skip-browser-warning': '69420'
+                }
+            });
+            localStorage.removeItem('isAuthenticated');
+            navigate('/login');
+        } catch (error) {
+            console.error('Logout error:', error);
+            localStorage.removeItem('isAuthenticated');
+            navigate('/login');
+        }
+    };
+
     const tabs = [
         { id: 'personal', label: 'Personal Information', icon: <User size={20} /> },
         { id: 'workout', label: 'Workout Logs', icon: <Dumbbell size={20} /> },
@@ -134,6 +206,18 @@ const Profile = () => {
                 variants={containerVariants}
                 className="flex-1 pt-24 pb-12 px-4 md:px-6 max-w-7xl mx-auto w-full"
             >
+                {successMessage && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-[#b0f020]/20 border border-[#b0f020] text-[#b0f020] p-4 rounded-2xl mb-8 flex items-center justify-between font-bold"
+                    >
+                        <span>{successMessage}</span>
+                        <button onClick={() => setSuccessMessage(null)} className="text-[#b0f020] hover:text-white transition-colors">
+                            <X size={20} />
+                        </button>
+                    </motion.div>
+                )}
                 <div className="flex flex-col lg:flex-row gap-8 min-h-[70vh]">
 
                     {/* Sidebar */}
@@ -174,6 +258,14 @@ const Profile = () => {
                                     {activeTab === tab.id && <ChevronRight size={16} />}
                                 </button>
                             ))}
+                            
+                            <button
+                                onClick={handleLogout}
+                                className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all font-medium bg-[#151a15] text-red-500 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 mt-2"
+                            >
+                                <LogOut size={20} />
+                                <span className="flex-1 text-left">Logout</span>
+                            </button>
                         </div>
                     </motion.aside>
 
@@ -214,19 +306,51 @@ const Profile = () => {
                                     </div>
 
                                     <div className="grid sm:grid-cols-2 gap-4 md:gap-6">
-                                        {[
+                                        {userData.role === 'member' && [
                                             { label: 'Full Name', value: userData.name, icon: <User /> },
                                             { label: 'Email Address', value: userData.email, icon: <Mail /> },
                                             { label: 'Phone Number', value: userData.phone, icon: <Phone size={16} /> },
                                             { label: 'Date of Birth', value: userData.dob, icon: <Calendar size={16} /> },
                                             { label: 'Current Height', value: userData.height, icon: <Ruler /> },
                                             { label: 'Current Weight', value: userData.weight, icon: <Weight /> },
-                                            // { label: 'Experience Level', value: userData.level, icon: <Activity /> },
                                             { label: 'Fitness Goal', value: userData.goal, icon: <Settings /> },
                                         ].map((item, i) => (
                                             <div key={i} className="bg-[#151a15] p-5 md:p-6 rounded-3xl border border-white/5 hover:border-[#b0f020]/20 transition-all">
                                                 <div className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest mb-1 md:mb-2">{item.label}</div>
-                                                <div className="text-base md:text-lg font-bold">{item.value}</div>
+                                                <div className="text-base md:text-lg font-bold truncate">{typeof item.value === 'object' && item.value !== null ? JSON.stringify(item.value) : item.value}</div>
+                                            </div>
+                                        ))}
+
+                                        {userData.role === 'trainer' && [
+                                            { label: 'Full Name', value: userData.name, icon: <User /> },
+                                            { label: 'Email Address', value: userData.email, icon: <Mail /> },
+                                            { label: 'Phone Number', value: userData.phone, icon: <Phone size={16} /> },
+                                            { label: 'Experience', value: `${userData.experienceYears} Years`, icon: <Activity /> },
+                                            { label: 'Specialization', value: userData.specialization, icon: <Dumbbell /> },
+                                            { label: 'Price per month', value: `${userData.pricePerMonth} EGP`, icon: <DollarSign size={16} /> },
+                                            { label: 'Bio', value: userData.bio, icon: <Info size={16} /> },
+                                        ].map((item, i) => (
+                                            <div key={i} className="bg-[#151a15] p-5 md:p-6 rounded-3xl border border-white/5 hover:border-[#b0f020]/20 transition-all">
+                                                <div className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest mb-1 md:mb-2">{item.label}</div>
+                                                <div className="text-base md:text-lg font-bold truncate">{typeof item.value === 'object' && item.value !== null ? JSON.stringify(item.value) : item.value}</div>
+                                            </div>
+                                        ))}
+
+                                        {userData.role === 'gym' && [
+                                            { label: 'Gym Name', value: userData.name, icon: <Building /> },
+                                            { label: 'Gym Email', value: userData.email, icon: <Mail /> },
+                                            { label: 'Gym Phone', value: userData.phone, icon: <Phone size={16} /> },
+                                            { label: 'Manager Name', value: userData.managerName, icon: <UserCheck /> },
+                                            { label: 'Manager Email', value: userData.managerEmail, icon: <Mail /> },
+                                            { label: 'City', value: userData.city, icon: <MapPin /> },
+                                            { label: 'Street Name', value: userData.streetName, icon: <Map /> },
+                                            { label: 'Crowd Level', value: userData.crowdLevel, icon: <Users /> },
+                                            { label: 'Price/Session', value: `${userData.pricePerSession} EGP`, icon: <DollarSign size={16} /> },
+                                            { label: 'Description', value: userData.description, icon: <Info size={16} /> },
+                                        ].map((item, i) => (
+                                            <div key={i} className="bg-[#151a15] p-5 md:p-6 rounded-3xl border border-white/5 hover:border-[#b0f020]/20 transition-all">
+                                                <div className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest mb-1 md:mb-2">{item.label}</div>
+                                                <div className="text-base md:text-lg font-bold truncate">{typeof item.value === 'object' && item.value !== null ? JSON.stringify(item.value) : item.value}</div>
                                             </div>
                                         ))}
                                     </div>
@@ -248,7 +372,7 @@ const Profile = () => {
                                             </h1>
                                             <p className="text-xs md:text-sm text-gray-500">Track your daily progress and statistics.</p>
                                         </div>
-                                        {/* <button
+                                        <button
                                             onClick={() => {
                                                 setEditingItem(null);
                                                 setModalType(activeTab);
@@ -257,7 +381,7 @@ const Profile = () => {
                                             className="bg-[#b0f020] text-black px-5 md:px-6 py-2 md:py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-[#9de018] transition-all transform hover:scale-105 text-sm"
                                         >
                                             <Plus size={16} /> Add Log
-                                        </button> */}
+                                        </button>
                                     </div>
 
                                     <div className="overflow-x-auto rounded-3xl border border-white/5 bg-[#151a15]/30">
@@ -330,6 +454,75 @@ const Profile = () => {
                                                     <Search size={24} className="text-gray-700" />
                                                 </div>
                                                 <p>No logs found. Start tracking your journey now!</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {activeTab === 'analytics' && (
+                                <motion.div
+                                    key="analytics"
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    className="space-y-8"
+                                >
+                                    <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-6 border border-white/5 rounded-3xl bg-[#151a15]/30">
+                                        {!isAnalyzing && !analysisData && (
+                                            <>
+                                                <LineChart size={48} className="text-[#b0f020] mb-4" />
+                                                <h2 className="text-2xl font-bold mb-2">Ready to Analyze?</h2>
+                                                <p className="text-gray-500 mb-6 max-w-md">Get AI-powered insights on your workouts and nutrition to optimize your fitness journey.</p>
+                                                <button 
+                                                    onClick={handleAnalyzeLogs}
+                                                    className="bg-[#b0f020] text-black px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-[#9de018] transition-all transform hover:scale-105"
+                                                >
+                                                    Analyze my Logs
+                                                </button>
+                                            </>
+                                        )}
+                                        
+                                        {isAnalyzing && (
+                                            <div className="flex flex-col items-center">
+                                                <div className="w-12 h-12 border-4 border-[#b0f020]/20 border-t-[#b0f020] rounded-full animate-spin mb-4"></div>
+                                                <h3 className="text-xl font-bold mb-2">Analyzing your logs...</h3>
+                                                <p className="text-sm text-gray-500">Crunching numbers and finding patterns.</p>
+                                            </div>
+                                        )}
+                                        
+                                        {!isAnalyzing && analysisData && (
+                                            <div className="w-full text-left">
+                                                <div className="flex justify-between items-center mb-6">
+                                                    <h3 className="text-2xl font-bold flex items-center gap-2"><Activity className="text-[#b0f020]" /> Your Dashboard</h3>
+                                                    <button onClick={handleAnalyzeLogs} className="text-sm text-[#b0f020] hover:underline font-bold">Re-analyze</button>
+                                                </div>
+                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                                    <div className="bg-[#0f120f] p-4 rounded-2xl border border-white/5 shadow-lg">
+                                                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">Total Workouts</p>
+                                                        <p className="text-2xl font-black text-white">{analysisData.totalWorkouts}</p>
+                                                    </div>
+                                                    <div className="bg-[#0f120f] p-4 rounded-2xl border border-white/5 shadow-lg">
+                                                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">Total Calories</p>
+                                                        <p className="text-2xl font-black text-[#b0f020]">{analysisData.totalCalories} <span className="text-xs font-medium">kcal</span></p>
+                                                    </div>
+                                                    <div className="bg-[#0f120f] p-4 rounded-2xl border border-white/5 shadow-lg">
+                                                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">Avg Protein</p>
+                                                        <p className="text-2xl font-black text-white">{analysisData.proteinAvg}</p>
+                                                    </div>
+                                                    <div className="bg-[#0f120f] p-4 rounded-2xl border border-white/5 shadow-lg">
+                                                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">Top Exercise</p>
+                                                        <p className="text-xl font-bold text-white truncate">{analysisData.topExercise}</p>
+                                                    </div>
+                                                    <div className="bg-[#0f120f] p-4 rounded-2xl border border-white/5 md:col-span-2 shadow-lg">
+                                                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">Avg Weight (Workout)</p>
+                                                        <p className="text-2xl font-black text-white">{analysisData.avgWorkoutWeight}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-6 p-4 bg-[#b0f020]/10 border border-[#b0f020]/20 rounded-2xl text-sm leading-relaxed">
+                                                    <span className="font-bold text-[#b0f020] mr-2">AI Insight:</span> 
+                                                    You are incredibly consistent with your Barbell Squats. Try increasing your daily protein intake slightly to match your heavy lifting load and improve recovery!
+                                                </div>
                                             </div>
                                         )}
                                     </div>

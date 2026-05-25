@@ -18,7 +18,7 @@ const ConfirmationBookingTrainer = () => {
         selectedTime = "10:00 AM",
         cardNumber = "4321",
         cardName = "Guest User",
-        totalAmount = "$85.50",
+        totalAmount = "85.50 EGP",
         bookingRef = "FS-BK-721839"
     } = location.state || {};
 

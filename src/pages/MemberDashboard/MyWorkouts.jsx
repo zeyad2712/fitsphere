@@ -161,7 +161,7 @@ const MyWorkouts = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <button 
+                                    {/* <button 
                                         onClick={() => toggleLog(ex.id)}
                                         className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 text-sm font-bold ${
                                             loggedExercises.includes(ex.id)
@@ -174,7 +174,7 @@ const MyWorkouts = () => {
                                         ) : (
                                             <><Plus size={16} /> Add to Log</>
                                         )}
-                                    </button>
+                                    </button> */}
                                 </motion.div>
                             ))}
                         </motion.div>

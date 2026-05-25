@@ -6,6 +6,8 @@ export const trainersData = [
         specialties: ["STRENGTH", "HIIT"],
         bio: "Certified conditioning coach with 8 years of experience in athletic performance.",
         price: 60,
+        discountprice: 50,
+        discountPercentage: 15,
         image: "https://i.pravatar.cc/300?u=Alex Rivera",
         availability: ["Mornings", "Evenings"]
     },
@@ -16,6 +18,7 @@ export const trainersData = [
         specialties: ["YOGA", "MINDFULNESS"],
         bio: "Vinyasa flow specialist focusing on mobility, breathwork, and mental clarity.",
         price: 55,
+        discountPercentage: 10,
         image: "https://i.pravatar.cc/300?u=Sarah Chen",
         availability: ["Mornings", "Weekends"]
     },
@@ -26,6 +29,7 @@ export const trainersData = [
         specialties: ["HIIT", "BODYWEIGHT"],
         bio: "Master of high-intensity functional training designed for fast, sustainable results.",
         price: 70,
+        discountPercentage: 20,
         image: "https://i.pravatar.cc/300?u=Marcus Thorne",
         availability: ["Afternoons", "Evenings"]
     },
@@ -36,6 +40,7 @@ export const trainersData = [
         specialties: ["PILATES", "REHAB"],
         bio: "Expert in core stability and corrective exercise, helping you move better and stronger.",
         price: 65,
+        discountPercentage: 25,
         image: "https://i.pravatar.cc/300?u=Elena Vance",
         availability: ["Mornings", "Afternoons"]
     },
@@ -46,6 +51,7 @@ export const trainersData = [
         specialties: ["BODYBUILDING", "NUTRITION"],
         bio: "Specializing in hypertrophy and nutritional strategies for maximum muscle growth.",
         price: 80,
+        discountPercentage: 30,
         image: "https://i.pravatar.cc/300?u=David Miller",
         availability: ["Evenings", "Weekends"]
     },
@@ -56,6 +62,7 @@ export const trainersData = [
         specialties: ["FUNCTIONAL", "KETTLEBELL"],
         bio: "Focusing on movement efficiency and functional strength using advanced kettlebell tools.",
         price: 50,
+        discountPercentage: 10,
         image: "https://i.pravatar.cc/300?u=Maya Gupta",
         availability: ["Mornings", "Weekends"]
     }

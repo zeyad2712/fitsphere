@@ -165,7 +165,7 @@ const MyNutrition = () => {
                                                 <p className="text-lg font-bold text-[#b0f020]">{meal.calories}</p>
                                                 <p className="text-[10px] text-gray-500 font-bold uppercase">kcal</p>
                                             </div>
-                                            <button 
+                                            {/* <button 
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     toggleMealLog(meal.id);
@@ -181,7 +181,7 @@ const MyNutrition = () => {
                                                 ) : (
                                                     <><Plus size={14} /> Log</>
                                                 )}
-                                            </button>
+                                            </button> */}
                                         </div>
                                     </div>
                                 ))}

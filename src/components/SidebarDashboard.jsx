@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
     LayoutDashboard, Users, Calendar, BarChart3, Settings, 
-    MessageSquare, LogOut, Dumbbell, Globe, Package, Tags, Layers, Video
+    MessageSquare, LogOut, Dumbbell, Globe, Package, Tags, Layers, Video, ShoppingCart
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
@@ -17,7 +17,7 @@ const SidebarDashboard = ({ isSidebarOpen, role = 'trainer', activeTab, setActiv
             // { id: 'schedule', label: 'Schedule', icon: Calendar, path: '#' },
             // { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '#' },
             // { id: 'messages', label: 'Messages', icon: MessageSquare, path: '#' },
-            { id: 'settings', label: 'Settings', icon: Settings, path: '#' },
+            // { id: 'settings', label: 'Settings', icon: Settings, path: '#' },
         ],
         member: [
             { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, path: '/member-dashboard' },
@@ -25,7 +25,7 @@ const SidebarDashboard = ({ isSidebarOpen, role = 'trainer', activeTab, setActiv
             { id: 'workouts', label: 'My Workouts', icon: Dumbbell, path: '/member-dashboard/workouts' },
             { id: 'nutrition', label: 'Nutrition', icon: BarChart3, path: '/member-dashboard/nutrition' },
             // { id: 'messages', label: 'Messages', icon: MessageSquare, path: '#' },
-            { id: 'settings', label: 'Settings', icon: Settings, path: '#' },
+            // { id: 'settings', label: 'Settings', icon: Settings, path: '#' },
         ],
         admin: [
             { id: 'overview', label: 'Dashboard', icon: LayoutDashboard, path: '/admin-dashboard' },
@@ -34,6 +34,9 @@ const SidebarDashboard = ({ isSidebarOpen, role = 'trainer', activeTab, setActiv
             { id: 'productCategories', label: 'Product Categories', icon: Tags, path: '/admin-dashboard' },
             { id: 'videoCategories', label: 'Video Categories', icon: Layers, path: '/admin-dashboard' },
             { id: 'videos', label: 'Video Library', icon: Video, path: '/admin-dashboard' },
+            { id: 'bookings', label: 'Bookings', icon: Calendar, path: '/admin-dashboard' },
+            { id: 'orders', label: 'Orders', icon: ShoppingCart, path: '/admin-dashboard' },
+            { id: 'contact', label: 'Contact', icon: MessageSquare, path: '/admin-dashboard' },
         ]
     };
 

@@ -163,8 +163,8 @@ const TrainersBundles = () => {
                             {/* Price */}
                             <div className="mb-10">
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-gray-400 font-bold text-lg">$</span>
                                     <span className="text-5xl font-black italic tracking-tighter">{bundle.price}</span>
+                                    <span className="text-gray-400 font-bold text-lg">EGP</span>
                                 </div>
                                 <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1 block">
                                     {bundle.duration}

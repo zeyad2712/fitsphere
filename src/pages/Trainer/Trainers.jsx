@@ -292,9 +292,21 @@ const Trainers = () => {
                                                 {trainer.bio}
                                             </p>
 
-                                            <div className="mb-6">
+                                            <div className="mb-6 flex items-center gap-2 flex-wrap">
                                                 <span className="text-sm text-gray-400">Starting at </span>
-                                                <span className="text-[#b0f020] font-bold text-lg">{trainer.price}EGP</span>
+                                                {trainer.discountPercentage ? (
+                                                    <>
+                                                        <span className="text-gray-500 font-medium line-through text-sm">{trainer.price}EGP</span>
+                                                        <span className="text-[#b0f020] font-bold text-lg">
+                                                            {Math.round(trainer.price * (1 - trainer.discountPercentage / 100))}EGP
+                                                        </span>
+                                                        <span className="bg-red-500/10 text-red-400 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider border border-red-500/20">
+                                                            -{trainer.discountPercentage}%
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    <span className="text-[#b0f020] font-bold text-lg">{trainer.price}EGP</span>
+                                                )}
                                                 <span className="text-sm text-gray-500">/month</span>
                                             </div>
 
@@ -310,7 +322,7 @@ const Trainers = () => {
                                                         state: {
                                                             trainerId: trainer.id,
                                                             trainerName: trainer.name,
-                                                            trainerPrice: trainer.price,
+                                                            trainerPrice: trainer.discountPercentage ? Math.round(trainer.price * (1 - trainer.discountPercentage / 100)) : trainer.price,
                                                             trainerSpecialties: trainer.specialties,
                                                             trainerImage: trainer.image
                                                         }

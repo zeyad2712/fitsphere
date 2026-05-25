@@ -1,9 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Dumbbell, Mail, Lock, ArrowRight, ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../css/Auth.css';
 
 const Login = () => {
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [apiError, setApiError] = useState(null);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setApiError(null);
+        try {
+            const response = await fetch('https://recess-throwaway-unchanged.ngrok-free.dev/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'ngrok-skip-browser-warning': '69420'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Login successful:', data);
+                localStorage.setItem('isAuthenticated', 'true');
+                // We pass data.user if available, else just data
+                navigate('/profile', { state: { successMessage: 'Login successful!', userData: data.user || data } });
+            } else {
+                const errorData = await response.json();
+                console.error('Login failed:', errorData);
+                let errorMessage = 'Login failed. Please check your credentials.';
+                if (errorData.message) errorMessage = errorData.message;
+                else if (typeof errorData === 'string') errorMessage = errorData;
+                else if (errorData.errors) errorMessage = Object.values(errorData.errors).flat().join(', ');
+                setApiError(errorMessage);
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            setApiError('An error occurred during login. Please check your connection.');
+        }
+    };
+
     return (
         <div>
             <div className="auth-wrapper">
@@ -53,13 +97,13 @@ const Login = () => {
                             <p>Welcome back! Please enter your details.</p>
                         </div>
 
-                        <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+                        <form className="auth-form" onSubmit={handleSubmit}>
                             {/* Email Address */}
                             <div className="form-group">
                                 <label>Email Address</label>
                                 <div className="input-wrapper">
                                     <Mail size={18} className="input-icon" />
-                                    <input type="email" placeholder="john@example.com" className="form-input" />
+                                    <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="john@example.com" className="form-input" required />
                                 </div>
                             </div>
 
@@ -68,16 +112,23 @@ const Login = () => {
                                 <label>Password</label>
                                 <div className="input-wrapper">
                                     <Lock size={18} className="input-icon" />
-                                    <input type="password" placeholder="••••••••" className="form-input" />
+                                    <input type="password" name="password" value={formData.password} onChange={handleInputChange} placeholder="••••••••" className="form-input" required />
                                 </div>
                             </div>
 
                             {/* Forgot Password */}
-                            <div className="form-group" style={{ alignItems: 'flex-end', marginTop: '-0.5rem' }}>
+                            {/* <div className="form-group" style={{ alignItems: 'flex-end', marginTop: '-0.5rem' }}>
                                 <span style={{ fontSize: '0.8rem', color: '#8b9d7b' }}>
                                     Forgot your password? <Link to="/forget-password" style={{ color: '#baff29', fontWeight: '600' }}>Reset it here</Link>
                                 </span>
-                            </div>
+                            </div> */}
+                            
+                            {apiError && (
+                                <div style={{ color: '#ff4d4d', marginTop: '1rem', fontSize: '0.875rem', textAlign: 'center', backgroundColor: 'rgba(255, 77, 77, 0.1)', padding: '10px', borderRadius: '8px' }}>
+                                    {apiError}
+                                </div>
+                            )}
+
                             {/* Submit Button */}
                             <button type="submit" className="submit-btn" style={{ transition: 'all 0.3s ease', marginTop: '1rem' }}>
                                 Log In

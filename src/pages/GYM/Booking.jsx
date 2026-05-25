@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -15,7 +15,7 @@ const Booking = () => {
     // Safe fallback defaults if page is accessed directly
     const { 
         gymName = "FitSphere Elite", 
-        gymPrice = "$80/mo", 
+        gymPrice = "80 EGP/mo", 
         selectedDate = new Date().toISOString().split('T')[0], 
         sessionType = "Personal Training" 
     } = location.state || {};
@@ -28,6 +28,15 @@ const Booking = () => {
     const [isFocused, setIsFocused] = useState(''); // To flip card if needed (CVV focus)
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Simulate initial page load
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1200);
+        return () => clearTimeout(timer);
+    }, []);
 
     // Calculate Price details
     const cleanPrice = parseFloat(gymPrice.replace(/[^0-9.]/g, '')) || 80.00;
@@ -90,7 +99,7 @@ const Booking = () => {
         setIsSubmitting(true);
 
         const bookingRef = `FS-BK-${Math.floor(100000 + Math.random() * 900000)}`;
-        const totalAmount = `$${total.toFixed(2)}`;
+        const totalAmount = `${total.toFixed(2)} EGP`;
 
         // Simulate payment gateway call
         setTimeout(() => {
@@ -137,7 +146,38 @@ const Booking = () => {
         <div className="bg-[#0a0d0a] min-h-screen text-white font-sans selection:bg-[#b0f020] selection:text-black">
             <Navbar />
 
-            {/* Loading Overlay */}
+            {/* Initial Page Loading Overlay */}
+            <AnimatePresence>
+                {isLoading && (
+                    <motion.div 
+                        initial={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="fixed inset-0 z-[9999] bg-[#0a0d0a] flex flex-col items-center justify-center gap-6"
+                    >
+                        <div className="relative">
+                            <motion.div
+                                animate={{
+                                    scale: [1, 1.2, 1],
+                                    opacity: [0.3, 0.6, 0.3]
+                                }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                                className="absolute inset-0 bg-[#b0f020] blur-[40px] rounded-full"
+                            />
+                            <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                                className="relative z-10 text-[#b0f020]"
+                            >
+                                <Dumbbell size={54} className="animate-pulse" />
+                            </motion.div>
+                        </div>
+                        <h2 className="text-xl font-bold uppercase tracking-wider text-[#b0f020]">Preparing Checkout...</h2>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Submitting Loading Overlay */}
             <AnimatePresence>
                 {isSubmitting && (
                     <motion.div 
@@ -169,7 +209,12 @@ const Booking = () => {
                 )}
             </AnimatePresence>
 
-            <div className="pt-28 pb-20 px-6 md:px-12 max-w-6xl mx-auto">
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: isLoading ? 0 : 1, y: isLoading ? 20 : 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="pt-28 pb-20 px-6 md:px-12 max-w-6xl mx-auto"
+            >
                 {/* Back button */}
                 <div className="mb-8">
                     <Link to="/gyms" className="inline-flex items-center gap-2 text-gray-400 hover:text-[#b0f020] transition-colors group">
@@ -389,15 +434,15 @@ const Booking = () => {
                                 <div className="border-t border-white/5 pt-6 space-y-3">
                                     <div className="flex justify-between text-gray-400">
                                         <span>Personal Training Session</span>
-                                        <span className="font-semibold font-mono text-white">${cleanPrice.toFixed(2)}</span>
+                                        <span className="font-semibold font-mono text-white">{cleanPrice.toFixed(2)} EGP</span>
                                     </div>
                                     <div className="flex justify-between text-gray-400">
                                         <span>VAT / Tax (14%)</span>
-                                        <span className="font-semibold font-mono text-white">${tax.toFixed(2)}</span>
+                                        <span className="font-semibold font-mono text-white">{tax.toFixed(2)} EGP</span>
                                     </div>
                                     <div className="border-t border-white/5 pt-4 flex justify-between items-end">
                                         <span className="font-black text-sm uppercase tracking-wide">Total Amount</span>
-                                        <span className="text-2xl font-black font-mono text-[#b0f020]">${total.toFixed(2)}</span>
+                                        <span className="text-2xl font-black font-mono text-[#b0f020]">{total.toFixed(2)} EGP</span>
                                     </div>
                                 </div>
                             </div>
@@ -414,7 +459,7 @@ const Booking = () => {
                     </div>
 
                 </div>
-            </div>
+            </motion.div>
 
             <Footer />
         </div>

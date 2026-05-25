@@ -276,7 +276,7 @@ const CheckOutPage = () => {
                                             <h4 className="text-sm font-bold leading-tight">{item.name}</h4>
                                             <div className="flex justify-between items-center mt-1">
                                                 <span className="text-[10px] text-gray-500 font-black uppercase">Qty: {item.quantity}</span>
-                                                <span className="text-sm font-bold text-[#b0f020]">${(item.price * item.quantity).toFixed(2)}</span>
+                                                <span className="text-sm font-bold text-[#b0f020]">{(item.price * item.quantity).toFixed(2)} EGP</span>
                                             </div>
                                         </div>
                                     </div>
@@ -286,22 +286,22 @@ const CheckOutPage = () => {
                             <div className="space-y-4 pt-6 border-t border-white/5 mb-8">
                                 <div className="flex justify-between text-gray-400 text-sm font-medium">
                                     <span>Subtotal</span>
-                                    <span className="text-white font-bold">${subtotal.toFixed(2)}</span>
+                                    <span className="text-white font-bold">{subtotal.toFixed(2)} EGP</span>
                                 </div>
                                 <div className="flex justify-between text-gray-400 text-sm font-medium">
                                     <span>Estimated Tax (10%)</span>
-                                    <span className="text-white font-bold">${tax.toFixed(2)}</span>
+                                    <span className="text-white font-bold">{tax.toFixed(2)} EGP</span>
                                 </div>
                                 <div className="flex justify-between text-gray-400 text-sm font-medium">
                                     <span>Shipping</span>
                                     <span className={shipping === 0 ? "text-[#b0f020] font-bold" : "text-white font-bold"}>
-                                        {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                                        {shipping === 0 ? "FREE" : `${shipping.toFixed(2)} EGP`}
                                     </span>
                                 </div>
                                 <div className="h-px bg-white/5 my-4"></div>
                                 <div className="flex justify-between items-end">
                                     <span className="text-lg font-bold">Total</span>
-                                    <span className="text-3xl font-black text-[#b0f020] italic tracking-tighter">${total.toFixed(2)}</span>
+                                    <span className="text-3xl font-black text-[#b0f020] italic tracking-tighter">{total.toFixed(2)} EGP</span>
                                 </div>
                             </div>
 

@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
-import { 
-    Dumbbell, User, Mail, Lock, Target, ArrowRight, ChevronDown, ArrowLeft, 
-    Calendar, Phone, Building, MapPin, Info, Users, Scale, Ruler, 
-    Award, DollarSign, Briefcase, UserCheck, Clock, Map 
+import {
+    Dumbbell, User, Mail, Lock, Target, ArrowRight, ChevronDown, ArrowLeft,
+    Calendar, Phone, Building, MapPin, Info, Users, Scale, Ruler,
+    Award, DollarSign, Briefcase, UserCheck, Clock, Map
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../css/Auth.css';
 
 const SignUp = () => {
     const [role, setRole] = useState('member');
     const [step, setStep] = useState(1);
-    
+    const [apiError, setApiError] = useState(null);
+    const navigate = useNavigate();
+
     // Form state to persist data across steps
     const [formData, setFormData] = useState({
-        fullName: '', email: '', password: '', confirmPassword: '', dob: '', phone: '',
+        name: '', email: '', password: '', password_confirmation: '', birth_date: '', phone: '',
         fitnessGoal: '', weight: '', height: '',
-        experienceYears: '', specialization: '', bio: '', pricePerMonth: '',
+        experienceYears: '', specalization: '', BIO: '', fair: '',
         gymName: '', gymEmail: '', gymPhone: '', managerName: '', managerEmail: '',
-        city: '', streetName: '', description: '', crowdLevel: 'low', pricePerSession: ''
+        city: '', streetName: '', description: '', Crowd: 'low', fair: ''
     });
 
     const handleInputChange = (e) => {
@@ -34,20 +36,64 @@ const SignUp = () => {
     const nextStep = () => setStep(2);
     const prevStep = () => setStep(1);
 
+    const handleSubmit = async () => {
+        setApiError(null);
+        try {
+            let endpoint = '';
+            if (role === 'member') {
+                endpoint = 'https://recess-throwaway-unchanged.ngrok-free.dev/api/register/member';
+            } else if (role === 'trainer') {
+                endpoint = 'https://recess-throwaway-unchanged.ngrok-free.dev/api/register/trainer';
+            } else if (role === 'gym') {
+                endpoint = 'https://recess-throwaway-unchanged.ngrok-free.dev/api/register/gym';
+            }
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'ngrok-skip-browser-warning': '69420'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Registration successful:', data);
+                localStorage.setItem('isAuthenticated', 'true');
+                navigate('/profile', { state: { successMessage: 'Registration successful!', userData: { ...formData, role: role } } });
+            } else {
+                const errorData = await response.json();
+                console.error('Registration failed:', errorData);
+                let errorMessage = 'Registration failed. Please check your details and try again.';
+                if (errorData.message) errorMessage = errorData.message;
+                else if (typeof errorData === 'string') errorMessage = errorData;
+                else if (errorData.errors) {
+                    errorMessage = Object.values(errorData.errors).flat().join(', ');
+                }
+                setApiError(errorMessage);
+            }
+        } catch (error) {
+            console.error('Error during registration:', error);
+            setApiError('An error occurred during registration. Please check your connection.');
+        }
+    };
+
     // Animation variants
     const containerVariants = {
         hidden: { opacity: 0, x: 20 },
-        visible: { 
-            opacity: 1, 
+        visible: {
+            opacity: 1,
             x: 0,
-            transition: { 
+            transition: {
                 staggerChildren: 0.1,
                 duration: 0.4,
                 ease: "easeOut"
             }
         },
-        exit: { 
-            opacity: 0, 
+        exit: {
+            opacity: 0,
             x: -20,
             transition: { duration: 0.2 }
         }
@@ -61,7 +107,7 @@ const SignUp = () => {
     const renderStep1 = () => {
         if (role === 'member' || role === 'trainer') {
             return (
-                <motion.div 
+                <motion.div
                     key="member-step-1"
                     variants={containerVariants}
                     initial="hidden"
@@ -70,19 +116,19 @@ const SignUp = () => {
                 >
                     <motion.div variants={itemVariants} className="form-group">
                         <label>Full Name</label>
-                        <motion.div 
+                        <motion.div
                             className="input-wrapper"
                             whileFocus={{ scale: 1.01 }}
                             transition={{ type: "spring", stiffness: 300 }}
                         >
                             <User size={18} className="input-icon" />
-                            <input type="text" name="fullName" value={formData.fullName} onChange={handleInputChange} placeholder="John Doe" className="form-input" required />
+                            <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="John Doe" className="form-input" required />
                         </motion.div>
                     </motion.div>
 
                     <motion.div variants={itemVariants} className="form-group">
                         <label>Email Address</label>
-                        <motion.div 
+                        <motion.div
                             className="input-wrapper"
                             whileFocus={{ scale: 1.01 }}
                             transition={{ type: "spring", stiffness: 300 }}
@@ -104,7 +150,7 @@ const SignUp = () => {
                             <label>Confirm Password</label>
                             <div className="input-wrapper">
                                 <Lock size={18} className="input-icon" />
-                                <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} placeholder="••••••••" className="form-input" required />
+                                <input type="password" name="password_confirmation" value={formData.password_confirmation} onChange={handleInputChange} placeholder="••••••••" className="form-input" required />
                             </div>
                         </div>
                     </motion.div>
@@ -114,7 +160,7 @@ const SignUp = () => {
                             <label>Date of Birth</label>
                             <div className="input-wrapper">
                                 <Calendar size={18} className="input-icon" />
-                                <input type="date" name="dob" value={formData.dob} onChange={handleInputChange} className="form-input" required />
+                                <input type="date" name="birth_date" value={formData.birth_date} onChange={handleInputChange} className="form-input" required />
                             </div>
                         </div>
                         <div className="form-group">
@@ -129,7 +175,7 @@ const SignUp = () => {
             );
         } else {
             return (
-                <motion.div 
+                <motion.div
                     key="gym-step-1"
                     variants={containerVariants}
                     initial="hidden"
@@ -164,7 +210,7 @@ const SignUp = () => {
                             <label>Confirm Password</label>
                             <div className="input-wrapper">
                                 <Lock size={18} className="input-icon" />
-                                <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} placeholder="••••••••" className="form-input" required />
+                                <input type="password" name="password_confirmation" value={formData.password_confirmation} onChange={handleInputChange} placeholder="••••••••" className="form-input" required />
                             </div>
                         </div>
                     </motion.div>
@@ -173,7 +219,7 @@ const SignUp = () => {
                         <label>GYM Phone</label>
                         <div className="input-wrapper">
                             <Phone size={18} className="input-icon" />
-                            <input type="tel" name="gymPhone" value={formData.gymPhone} onChange={handleInputChange} placeholder="+1 (555) 000-0000" className="form-input" required />
+                            <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="+1 (555) 000-0000" className="form-input" required />
                         </div>
                     </motion.div>
 
@@ -201,7 +247,7 @@ const SignUp = () => {
     const renderStep2 = () => {
         if (role === 'member') {
             return (
-                <motion.div 
+                <motion.div
                     key="member-step-2"
                     variants={containerVariants}
                     initial="hidden"
@@ -210,7 +256,7 @@ const SignUp = () => {
                 >
                     <motion.div variants={itemVariants} className="form-group">
                         <label>Fitness Goal</label>
-                        <motion.div 
+                        <motion.div
                             className="input-wrapper"
                             whileFocusWithin={{ scale: 1.01 }}
                             transition={{ type: "spring", stiffness: 300 }}
@@ -222,7 +268,7 @@ const SignUp = () => {
                     <motion.div variants={itemVariants} className="form-row">
                         <div className="form-group">
                             <label>Weight (kg)</label>
-                            <motion.div 
+                            <motion.div
                                 className="input-wrapper"
                                 whileFocusWithin={{ scale: 1.01 }}
                                 transition={{ type: "spring", stiffness: 300 }}
@@ -233,7 +279,7 @@ const SignUp = () => {
                         </div>
                         <div className="form-group">
                             <label>Height (cm)</label>
-                            <motion.div 
+                            <motion.div
                                 className="input-wrapper"
                                 whileFocusWithin={{ scale: 1.01 }}
                                 transition={{ type: "spring", stiffness: 300 }}
@@ -247,7 +293,7 @@ const SignUp = () => {
             );
         } else if (role === 'trainer') {
             return (
-                <motion.div 
+                <motion.div
                     key="trainer-step-2"
                     variants={containerVariants}
                     initial="hidden"
@@ -266,29 +312,29 @@ const SignUp = () => {
                             <label>Specialization</label>
                             <div className="input-wrapper">
                                 <Award size={18} className="input-icon" />
-                                <input type="text" name="specialization" value={formData.specialization} onChange={handleInputChange} placeholder="e.g. Yoga, HIIT" className="form-input" required />
+                                <input type="text" name="specalization" value={formData.specalization} onChange={handleInputChange} placeholder="e.g. Yoga, HIIT" className="form-input" required />
                             </div>
                         </div>
                     </motion.div>
                     <motion.div variants={itemVariants} className="form-group">
-                        <label>Price per month ($)</label>
+                        <label>Price per month (EGP)</label>
                         <div className="input-wrapper">
                             <DollarSign size={18} className="input-icon" />
-                            <input type="number" name="pricePerMonth" value={formData.pricePerMonth} onChange={handleInputChange} placeholder="50" className="form-input" required />
+                            <input type="number" name="fair" value={formData.fair} onChange={handleInputChange} placeholder="50" className="form-input" required />
                         </div>
                     </motion.div>
                     <motion.div variants={itemVariants} className="form-group">
                         <label>BIO</label>
                         <div className="input-wrapper" style={{ alignItems: 'flex-start' }}>
                             <Info size={18} className="input-icon" style={{ marginTop: '0.85rem' }} />
-                            <textarea name="bio" value={formData.bio} onChange={handleInputChange} placeholder="Tell us about yourself..." className="form-input" style={{ minHeight: '100px', paddingTop: '0.75rem', resize: 'none' }} required></textarea>
+                            <textarea name="BIO" value={formData.BIO} onChange={handleInputChange} placeholder="Tell us about yourself..." className="form-input" style={{ minHeight: '100px', paddingTop: '0.75rem', resize: 'none' }} required></textarea>
                         </div>
                     </motion.div>
                 </motion.div>
             );
         } else {
             return (
-                <motion.div 
+                <motion.div
                     key="gym-step-2"
                     variants={containerVariants}
                     initial="hidden"
@@ -316,7 +362,7 @@ const SignUp = () => {
                             <label>Crowd Level</label>
                             <div className="input-wrapper">
                                 <Users size={18} className="input-icon" />
-                                <select name="crowdLevel" value={formData.crowdLevel} onChange={handleInputChange} className="form-input" style={{ appearance: 'none', paddingRight: '2.5rem' }} required>
+                                <select name="Crowd" value={formData.Crowd} onChange={handleInputChange} className="form-input" style={{ appearance: 'none', paddingRight: '2.5rem' }} required>
                                     <option value="low">🟢 Low</option>
                                     <option value="medium">🟡 Medium</option>
                                     <option value="high">🔴 High</option>
@@ -328,7 +374,7 @@ const SignUp = () => {
                             <label>Price per session ($)</label>
                             <div className="input-wrapper">
                                 <DollarSign size={18} className="input-icon" />
-                                <input type="number" name="pricePerSession" value={formData.pricePerSession} onChange={handleInputChange} placeholder="15" className="form-input" required />
+                                <input type="number" name="fair" value={formData.fair} onChange={handleInputChange} placeholder="15" className="form-input" required />
                             </div>
                         </div>
                     </motion.div>
@@ -405,8 +451,8 @@ const SignUp = () => {
 
                     <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
                         {step === 1 && (
-                            <motion.div 
-                                className="form-group" 
+                            <motion.div
+                                className="form-group"
                                 style={{ marginBottom: '1rem' }}
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
@@ -414,11 +460,11 @@ const SignUp = () => {
                                 <div className="role-group">
                                     {['member', 'trainer', 'gym'].map((r) => (
                                         <div key={r} className="role-option">
-                                            <input 
-                                                type="radio" 
-                                                id={`role-${r}`} 
-                                                name="role" 
-                                                value={r} 
+                                            <input
+                                                type="radio"
+                                                id={`role-${r}`}
+                                                name="role"
+                                                value={r}
                                                 checked={role === r}
                                                 onChange={(e) => handleRoleChange(e.target.value)}
                                             />
@@ -435,27 +481,37 @@ const SignUp = () => {
                             </AnimatePresence>
                         </div>
 
+                        {apiError && (
+                            <motion.div 
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                style={{ color: '#ff4d4d', marginTop: '1rem', fontSize: '0.875rem', textAlign: 'center', backgroundColor: 'rgba(255, 77, 77, 0.1)', padding: '10px', borderRadius: '8px' }}
+                            >
+                                {apiError}
+                            </motion.div>
+                        )}
+
                         <div className="form-footer" style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
                             {step === 2 && (
-                                <motion.button 
+                                <motion.button
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
-                                    type="button" 
-                                    onClick={prevStep} 
-                                    className="submit-btn" 
+                                    type="button"
+                                    onClick={prevStep}
+                                    className="submit-btn"
                                     style={{ flex: 1, backgroundColor: '#232c1e', color: '#ffffff' }}
                                 >
                                     <ArrowLeft size={18} />
                                     Back
                                 </motion.button>
                             )}
-                            
-                            <motion.button 
+
+                            <motion.button
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
-                                type="button" 
-                                onClick={step === 1 ? nextStep : () => alert('Submitted!')} 
-                                className="submit-btn" 
+                                type="button"
+                                onClick={step === 1 ? nextStep : handleSubmit}
+                                className="submit-btn"
                                 style={{ flex: step === 1 ? 1 : 2 }}
                             >
                                 {step === 1 ? 'Next Step' : 'Complete Sign Up'}

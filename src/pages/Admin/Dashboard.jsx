@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
+import {
     LayoutDashboard, Users, Package, Tags, Layers, Video,
-    Search, Plus, Trash2, Edit3, X, ShieldAlert, 
-    TrendingUp, CheckCircle, AlertTriangle, Menu, Bell, 
+    Search, Plus, Trash2, Edit3, X, ShieldAlert,
+    TrendingUp, CheckCircle, AlertTriangle, Menu, Bell,
     Play, Globe, ShoppingBag, PlusCircle, LogOut, Check, HelpCircle,
-    UserPlus, Eye, ShieldCheck, ShoppingCart, RefreshCw, ChevronRight
+    UserPlus, Eye, ShieldCheck, ShoppingCart, RefreshCw, ChevronRight, Calendar, MessageSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
@@ -70,6 +70,31 @@ const AdminDashboard = () => {
         ];
     });
 
+    const [orders, setOrders] = useState(() => {
+        const saved = localStorage.getItem('fs_admin_orders');
+        return saved ? JSON.parse(saved) : [
+            { id: 101, user: 'John Doe', amount: 120.50, status: 'Completed', date: '2024-05-01', items: 3 },
+            { id: 102, user: 'Jane Smith', amount: 45.00, status: 'Pending', date: '2024-05-02', items: 1 },
+            { id: 103, user: 'Iron Paradise Gym', amount: 350.00, status: 'Completed', date: '2024-05-05', items: 12 }
+        ];
+    });
+
+    const [bookings, setBookings] = useState(() => {
+        const saved = localStorage.getItem('fs_admin_bookings');
+        return saved ? JSON.parse(saved) : [
+            { id: 201, user: 'Emma Wilson', type: 'Personal Training', trainer: 'Coach Marcus', status: 'Confirmed', date: '2024-05-10', time: '10:00 AM' },
+            { id: 202, user: 'John Doe', type: 'Gym Pass', trainer: '-', status: 'Cancelled', date: '2024-05-12', time: '02:00 PM' }
+        ];
+    });
+
+    const [contactMessages, setContactMessages] = useState(() => {
+        const saved = localStorage.getItem('fs_admin_contact_messages');
+        return saved ? JSON.parse(saved) : [
+            { id: 301, name: 'Alice Cooper', email: 'alice@example.com', subject: 'Membership Inquiry', message: 'Hi, I would like to know if you offer family memberships?', date: '2024-05-15', status: 'Unread' },
+            { id: 302, name: 'Bob Marley', email: 'bob@example.com', subject: 'Equipment Issue', message: 'The treadmill #4 on the second floor is making a weird noise.', date: '2024-05-16', status: 'Read' }
+        ];
+    });
+
     // Save state to localStorage whenever it changes
     useEffect(() => {
         localStorage.setItem('fs_admin_users', JSON.stringify(users));
@@ -94,6 +119,18 @@ const AdminDashboard = () => {
     useEffect(() => {
         localStorage.setItem('fs_admin_activities', JSON.stringify(activities));
     }, [activities]);
+
+    useEffect(() => {
+        localStorage.setItem('fs_admin_orders', JSON.stringify(orders));
+    }, [orders]);
+
+    useEffect(() => {
+        localStorage.setItem('fs_admin_bookings', JSON.stringify(bookings));
+    }, [bookings]);
+
+    useEffect(() => {
+        localStorage.setItem('fs_admin_contact_messages', JSON.stringify(contactMessages));
+    }, [contactMessages]);
 
     const logActivity = (text, type = 'system') => {
         const newAct = {
@@ -202,7 +239,7 @@ const AdminDashboard = () => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData);
-        
+
         const { type, action, data: editingItem } = modalConfig;
 
         if (type === 'user') {
@@ -223,8 +260,8 @@ const AdminDashboard = () => {
                 logActivity(`Updated user details: ${data.name}`, 'user');
                 showToast(`User "${data.name}" updated successfully.`);
             }
-        } 
-        
+        }
+
         else if (type === 'product') {
             const price = parseFloat(data.price) || 0.00;
             const originalPrice = data.originalPrice ? parseFloat(data.originalPrice) : null;
@@ -250,8 +287,8 @@ const AdminDashboard = () => {
                 logActivity(`Updated product: ${data.name}`, 'product');
                 showToast(`Product "${data.name}" updated successfully.`);
             }
-        } 
-        
+        }
+
         else if (type === 'productCategory') {
             if (action === 'add') {
                 const newCat = {
@@ -267,8 +304,8 @@ const AdminDashboard = () => {
                 logActivity(`Updated product category: ${data.name}`, 'system');
                 showToast(`Category "${data.name}" updated.`);
             }
-        } 
-        
+        }
+
         else if (type === 'videoCategory') {
             if (action === 'add') {
                 const newCat = {
@@ -284,8 +321,8 @@ const AdminDashboard = () => {
                 logActivity(`Updated video category: ${data.name}`, 'system');
                 showToast(`Video category "${data.name}" updated.`);
             }
-        } 
-        
+        }
+
         else if (type === 'video') {
             if (action === 'add') {
                 const newVideo = {
@@ -316,8 +353,8 @@ const AdminDashboard = () => {
     // ----------------------------------------------------
     const filteredUsers = useMemo(() => {
         return users.filter(user => {
-            const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                 user.email.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                user.email.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesRole = filterOption === 'All' || user.role === filterOption;
             return matchesSearch && matchesRole;
         });
@@ -325,8 +362,8 @@ const AdminDashboard = () => {
 
     const filteredProducts = useMemo(() => {
         return products.filter(prod => {
-            const matchesSearch = prod.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                 prod.description.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesSearch = prod.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                prod.description.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesCat = filterOption === 'All' || prod.category === filterOption.toUpperCase();
             return matchesSearch && matchesCat;
         });
@@ -334,8 +371,8 @@ const AdminDashboard = () => {
 
     const filteredVideos = useMemo(() => {
         return videos.filter(vid => {
-            const matchesSearch = vid.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                 vid.targetedMuscle.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesSearch = vid.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                vid.targetedMuscle.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesCat = filterOption === 'All' || vid.category === filterOption;
             return matchesSearch && matchesCat;
         });
@@ -368,8 +405,8 @@ const AdminDashboard = () => {
 
     const containerVariants = {
         hidden: { opacity: 0, y: 15 },
-        visible: { 
-            opacity: 1, 
+        visible: {
+            opacity: 1,
             y: 0,
             transition: { duration: 0.4, ease: "easeOut" }
         }
@@ -377,7 +414,7 @@ const AdminDashboard = () => {
 
     return (
         <div className="flex min-h-screen bg-[#0a0d0a] text-white font-sans overflow-x-hidden selection:bg-[#b0f020] selection:text-black">
-            
+
             {/* Custom Toast Container */}
             <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-3">
                 <AnimatePresence>
@@ -387,11 +424,10 @@ const AdminDashboard = () => {
                             initial={{ opacity: 0, y: 30, scale: 0.9 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.2 } }}
-                            className={`flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl border text-sm font-semibold backdrop-blur-xl ${
-                                toast.type === 'error' 
-                                ? 'bg-red-500/10 border-red-500/20 text-red-400' 
+                            className={`flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl border text-sm font-semibold backdrop-blur-xl ${toast.type === 'error'
+                                ? 'bg-red-500/10 border-red-500/20 text-red-400'
                                 : 'bg-[#151a15] border-[#b0f020]/20 text-white'
-                            }`}
+                                }`}
                         >
                             <CheckCircle size={18} className="text-[#b0f020] shrink-0" />
                             <span>{toast.message}</span>
@@ -401,20 +437,20 @@ const AdminDashboard = () => {
             </div>
 
             {/* Sidebar */}
-            <SidebarDashboard 
-                isSidebarOpen={isSidebarOpen} 
-                role="admin" 
-                activeTab={activeTab} 
-                setActiveTab={setActiveTab} 
+            <SidebarDashboard
+                isSidebarOpen={isSidebarOpen}
+                role="admin"
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
             />
 
             {/* Main Content Area */}
             <main className={`flex-1 min-h-screen transition-all duration-300 ${isSidebarOpen ? 'md:ml-[260px]' : 'md:ml-[80px]'} flex flex-col`}>
-                
+
                 {/* Header */}
                 <header className="h-20 border-b border-white/5 flex items-center justify-between px-6 md:px-8 bg-[#0a0d0a]/80 backdrop-blur-xl sticky top-0 z-40">
                     <div className="flex items-center gap-4">
-                        <button 
+                        <button
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                             className="p-2 hover:bg-white/5 rounded-lg transition-colors hidden md:block"
                         >
@@ -451,19 +487,19 @@ const AdminDashboard = () => {
                 </header>
 
                 {/* Tab Content Container */}
-                <motion.div 
+                <motion.div
                     key={activeTab}
                     initial="hidden"
                     animate="visible"
                     variants={containerVariants}
                     className="p-6 md:p-8 flex-1 flex flex-col gap-8 max-w-[1400px] w-full mx-auto"
                 >
-                    
+
                     {/* Mobile Tabs selector (since SidebarDashboard is hidden on small screens) */}
                     <div className="md:hidden w-full bg-[#121612] border border-white/5 p-2 rounded-2xl flex flex-col gap-2">
                         <label className="text-[11px] font-black uppercase tracking-wider text-gray-500 px-3 pt-1">Navigate Dashboard</label>
-                        <select 
-                            value={activeTab} 
+                        <select
+                            value={activeTab}
                             onChange={(e) => setActiveTab(e.target.value)}
                             className="bg-[#0a0d0a] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#b0f020] text-white"
                         >
@@ -473,6 +509,8 @@ const AdminDashboard = () => {
                             <option value="productCategories">Manage Product Categories</option>
                             <option value="videoCategories">Manage Video Categories</option>
                             <option value="videos">Manage Video Library</option>
+                            <option value="orders">Manage Orders</option>
+                            <option value="bookings">Manage Bookings</option>
                         </select>
                     </div>
 
@@ -487,14 +525,14 @@ const AdminDashboard = () => {
                                     <p className="text-gray-400 text-sm max-w-xl">Welcome to your administration control room. Here you can efficiently manage users, products, classes, categories, and video library assets.</p>
                                 </div>
                                 <div className="flex gap-3 shrink-0 flex-wrap justify-center">
-                                    <button 
-                                        onClick={() => openAddModal('product')} 
+                                    <button
+                                        onClick={() => openAddModal('product')}
                                         className="bg-[#b0f020] text-black px-5 py-3 rounded-2xl text-xs font-bold flex items-center gap-2 hover:bg-[#9de018] shadow-[0_8px_20px_rgba(176,240,32,0.15)] transition-all transform hover:-translate-y-0.5 active:scale-95"
                                     >
                                         <PlusCircle size={15} /> Add Product
                                     </button>
-                                    <button 
-                                        onClick={() => openAddModal('video')} 
+                                    <button
+                                        onClick={() => openAddModal('video')}
                                         className="bg-white/5 border border-white/10 hover:bg-white/10 px-5 py-3 rounded-2xl text-xs font-bold flex items-center gap-2 transition-all transform hover:-translate-y-0.5 active:scale-95"
                                     >
                                         <Play size={14} className="text-[#b0f020]" /> Add Video
@@ -548,7 +586,7 @@ const AdminDashboard = () => {
 
                             {/* Detailed split: Activity Log & Quick System shortcuts */}
                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                
+
                                 {/* Recent Activities */}
                                 <div className="lg:col-span-2 bg-[#121612] border border-white/5 rounded-[2rem] p-6 md:p-8 flex flex-col">
                                     <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
@@ -558,12 +596,11 @@ const AdminDashboard = () => {
                                     <div className="space-y-4 max-h-[350px] overflow-y-auto custom-scrollbar pr-2">
                                         {activities.map((act) => (
                                             <div key={act.id} className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-colors flex items-center gap-4">
-                                                <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center ${
-                                                    act.type === 'user' ? 'bg-[#3b82f6]/10 text-[#3b82f6]' :
+                                                <div className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center ${act.type === 'user' ? 'bg-[#3b82f6]/10 text-[#3b82f6]' :
                                                     act.type === 'product' ? 'bg-[#b0f020]/10 text-[#b0f020]' :
-                                                    act.type === 'video' ? 'bg-[#a855f7]/10 text-[#a855f7]' :
-                                                    'bg-gray-500/10 text-gray-400'
-                                                }`}>
+                                                        act.type === 'video' ? 'bg-[#a855f7]/10 text-[#a855f7]' :
+                                                            'bg-gray-500/10 text-gray-400'
+                                                    }`}>
                                                     {act.type === 'user' && <Users size={14} />}
                                                     {act.type === 'product' && <Package size={14} />}
                                                     {act.type === 'video' && <Video size={14} />}
@@ -587,7 +624,7 @@ const AdminDashboard = () => {
                                         </h3>
                                         <p className="text-xs text-gray-500 mb-6">Instantly access specific operations or register new objects within the platform system.</p>
                                         <div className="space-y-3">
-                                            <button 
+                                            <button
                                                 onClick={() => openAddModal('user')}
                                                 className="w-full p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-[#b0f020]/10 hover:border-[#b0f020]/30 transition-all text-left text-xs font-bold flex items-center justify-between group"
                                             >
@@ -597,7 +634,7 @@ const AdminDashboard = () => {
                                                 </span>
                                                 <ChevronRight size={14} className="text-gray-500 group-hover:translate-x-1 transition-transform" />
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={() => openAddModal('productCategory')}
                                                 className="w-full p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-[#b0f020]/10 hover:border-[#b0f020]/30 transition-all text-left text-xs font-bold flex items-center justify-between group"
                                             >
@@ -607,7 +644,7 @@ const AdminDashboard = () => {
                                                 </span>
                                                 <ChevronRight size={14} className="text-gray-500 group-hover:translate-x-1 transition-transform" />
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={() => openAddModal('videoCategory')}
                                                 className="w-full p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-[#b0f020]/10 hover:border-[#b0f020]/30 transition-all text-left text-xs font-bold flex items-center justify-between group"
                                             >
@@ -635,16 +672,16 @@ const AdminDashboard = () => {
                             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-[#121612] p-4 rounded-3xl border border-white/5">
                                 <div className="relative group w-full sm:max-w-xs">
                                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#b0f020] transition-colors" size={16} />
-                                    <input 
-                                        type="text" 
-                                        placeholder="Search by name or email..." 
+                                    <input
+                                        type="text"
+                                        placeholder="Search by name or email..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         className="w-full bg-[#0a0d0a] border border-white/5 rounded-2xl py-2.5 pl-10 pr-4 text-xs focus:outline-none focus:border-[#b0f020] transition-all text-white"
                                     />
                                 </div>
                                 <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                                    <select 
+                                    <select
                                         value={filterOption}
                                         onChange={(e) => setFilterOption(e.target.value)}
                                         className="bg-[#0a0d0a] border border-white/5 rounded-2xl px-4 py-2.5 text-xs text-gray-400 focus:outline-none focus:border-[#b0f020] cursor-pointer"
@@ -655,7 +692,7 @@ const AdminDashboard = () => {
                                         <option value="Gym">Gym</option>
                                         <option value="Member">Member</option>
                                     </select>
-                                    <button 
+                                    <button
                                         onClick={() => openAddModal('user')}
                                         className="bg-[#b0f020] text-black px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 hover:bg-[#9de018] shadow-lg shadow-[#b0f020]/10 transition-colors"
                                     >
@@ -690,12 +727,11 @@ const AdminDashboard = () => {
                                                 </td>
                                                 <td className="px-6 py-5 text-xs text-gray-400 font-medium whitespace-nowrap">{user.email}</td>
                                                 <td className="px-6 py-5 whitespace-nowrap">
-                                                    <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border ${
-                                                        user.role === 'Admin' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
+                                                    <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border ${user.role === 'Admin' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
                                                         user.role === 'Trainer' ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' :
-                                                        user.role === 'Gym' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
-                                                        'bg-green-500/10 border-green-500/20 text-green-400'
-                                                    }`}>
+                                                            user.role === 'Gym' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
+                                                                'bg-green-500/10 border-green-500/20 text-green-400'
+                                                        }`}>
                                                         {user.role}
                                                     </span>
                                                 </td>
@@ -708,13 +744,13 @@ const AdminDashboard = () => {
                                                 <td className="px-6 py-5 text-xs text-gray-500 font-medium whitespace-nowrap">{user.joinedDate}</td>
                                                 <td className="px-6 py-5 text-right whitespace-nowrap">
                                                     <div className="flex items-center justify-end gap-2">
-                                                        <button 
+                                                        <button
                                                             onClick={() => openEditModal('user', user)}
                                                             className="text-gray-400 hover:text-[#b0f020] transition-colors p-2 bg-white/5 rounded-xl border border-transparent hover:border-[#b0f020]/25"
                                                         >
                                                             <Edit3 size={13} />
                                                         </button>
-                                                        <button 
+                                                        <button
                                                             onClick={() => handleDelete('user', user.id, user.name)}
                                                             className="text-gray-400 hover:text-red-500 transition-colors p-2 bg-white/5 rounded-xl border border-transparent hover:border-red-500/25"
                                                         >
@@ -743,16 +779,16 @@ const AdminDashboard = () => {
                             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-[#121612] p-4 rounded-3xl border border-white/5">
                                 <div className="relative group w-full sm:max-w-xs">
                                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#b0f020] transition-colors" size={16} />
-                                    <input 
-                                        type="text" 
-                                        placeholder="Search products..." 
+                                    <input
+                                        type="text"
+                                        placeholder="Search products..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         className="w-full bg-[#0a0d0a] border border-white/5 rounded-2xl py-2.5 pl-10 pr-4 text-xs focus:outline-none focus:border-[#b0f020] transition-all text-white"
                                     />
                                 </div>
                                 <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                                    <select 
+                                    <select
                                         value={filterOption}
                                         onChange={(e) => setFilterOption(e.target.value)}
                                         className="bg-[#0a0d0a] border border-white/5 rounded-2xl px-4 py-2.5 text-xs text-gray-400 focus:outline-none focus:border-[#b0f020] cursor-pointer"
@@ -762,7 +798,7 @@ const AdminDashboard = () => {
                                             <option key={opt} value={opt}>{opt}</option>
                                         ))}
                                     </select>
-                                    <button 
+                                    <button
                                         onClick={() => openAddModal('product')}
                                         className="bg-[#b0f020] text-black px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 hover:bg-[#9de018] shadow-lg shadow-[#b0f020]/10 transition-colors"
                                     >
@@ -802,9 +838,9 @@ const AdminDashboard = () => {
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <span className="px-2 py-0.5 rounded bg-white/5 text-[9px] font-black uppercase text-gray-400 border border-white/5">{prod.category}</span>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap font-bold text-sm text-[#b0f020]">${prod.price.toFixed(2)}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap font-bold text-sm text-[#b0f020]">EGP {prod.price.toFixed(2)}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
-                                                    {prod.originalPrice ? `$${prod.originalPrice.toFixed(2)}` : '-'}
+                                                    {prod.originalPrice ? `EGP ${prod.originalPrice.toFixed(2)}` : '-'}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     {prod.badge ? (
@@ -820,13 +856,13 @@ const AdminDashboard = () => {
                                                 </td>
                                                 <td className="px-6 py-4 text-right whitespace-nowrap">
                                                     <div className="flex items-center justify-end gap-2">
-                                                        <button 
+                                                        <button
                                                             onClick={() => openEditModal('product', prod)}
                                                             className="text-gray-400 hover:text-[#b0f020] transition-colors p-2 bg-white/5 rounded-xl border border-transparent hover:border-[#b0f020]/25"
                                                         >
                                                             <Edit3 size={13} />
                                                         </button>
-                                                        <button 
+                                                        <button
                                                             onClick={() => handleDelete('product', prod.id, prod.name)}
                                                             className="text-gray-400 hover:text-red-500 transition-colors p-2 bg-white/5 rounded-xl border border-transparent hover:border-red-500/25"
                                                         >
@@ -854,7 +890,7 @@ const AdminDashboard = () => {
                             {/* Toolbar */}
                             <div className="flex justify-between items-center bg-[#121612] p-4 rounded-3xl border border-white/5">
                                 <h3 className="text-sm font-bold text-gray-300">Shop Categories System</h3>
-                                <button 
+                                <button
                                     onClick={() => openAddModal('productCategory')}
                                     className="bg-[#b0f020] text-black px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 hover:bg-[#9de018] shadow-lg shadow-[#b0f020]/10 transition-colors"
                                 >
@@ -881,13 +917,13 @@ const AdminDashboard = () => {
                                                 <td className="px-6 py-5 text-xs text-gray-400 leading-relaxed">{cat.description}</td>
                                                 <td className="px-6 py-5 text-right whitespace-nowrap">
                                                     <div className="flex items-center justify-end gap-2">
-                                                        <button 
+                                                        <button
                                                             onClick={() => openEditModal('productCategory', cat)}
                                                             className="text-gray-400 hover:text-[#b0f020] transition-colors p-2 bg-white/5 rounded-xl border border-transparent hover:border-[#b0f020]/25"
                                                         >
                                                             <Edit3 size={13} />
                                                         </button>
-                                                        <button 
+                                                        <button
                                                             onClick={() => handleDelete('productCategory', cat.id, cat.name)}
                                                             className="text-gray-400 hover:text-red-500 transition-colors p-2 bg-white/5 rounded-xl border border-transparent hover:border-red-500/25"
                                                         >
@@ -909,7 +945,7 @@ const AdminDashboard = () => {
                             {/* Toolbar */}
                             <div className="flex justify-between items-center bg-[#121612] p-4 rounded-3xl border border-white/5">
                                 <h3 className="text-sm font-bold text-gray-300">Video Library Taxonomies</h3>
-                                <button 
+                                <button
                                     onClick={() => openAddModal('videoCategory')}
                                     className="bg-[#b0f020] text-black px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 hover:bg-[#9de018] shadow-lg shadow-[#b0f020]/10 transition-colors"
                                 >
@@ -936,13 +972,13 @@ const AdminDashboard = () => {
                                                 <td className="px-6 py-5 text-xs text-gray-400 leading-relaxed">{cat.description}</td>
                                                 <td className="px-6 py-5 text-right whitespace-nowrap">
                                                     <div className="flex items-center justify-end gap-2">
-                                                        <button 
+                                                        <button
                                                             onClick={() => openEditModal('videoCategory', cat)}
                                                             className="text-gray-400 hover:text-[#b0f020] transition-colors p-2 bg-white/5 rounded-xl border border-transparent hover:border-[#b0f020]/25"
                                                         >
                                                             <Edit3 size={13} />
                                                         </button>
-                                                        <button 
+                                                        <button
                                                             onClick={() => handleDelete('videoCategory', cat.id, cat.name)}
                                                             className="text-gray-400 hover:text-red-500 transition-colors p-2 bg-white/5 rounded-xl border border-transparent hover:border-red-500/25"
                                                         >
@@ -965,16 +1001,16 @@ const AdminDashboard = () => {
                             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-[#121612] p-4 rounded-3xl border border-white/5">
                                 <div className="relative group w-full sm:max-w-xs">
                                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#b0f020] transition-colors" size={16} />
-                                    <input 
-                                        type="text" 
-                                        placeholder="Search videos by title or muscle..." 
+                                    <input
+                                        type="text"
+                                        placeholder="Search videos by title or muscle..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         className="w-full bg-[#0a0d0a] border border-white/5 rounded-2xl py-2.5 pl-10 pr-4 text-xs focus:outline-none focus:border-[#b0f020] transition-all text-white"
                                     />
                                 </div>
                                 <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                                    <select 
+                                    <select
                                         value={filterOption}
                                         onChange={(e) => setFilterOption(e.target.value)}
                                         className="bg-[#0a0d0a] border border-white/5 rounded-2xl px-4 py-2.5 text-xs text-gray-400 focus:outline-none focus:border-[#b0f020] cursor-pointer"
@@ -984,7 +1020,7 @@ const AdminDashboard = () => {
                                             <option key={opt} value={opt}>{opt}</option>
                                         ))}
                                     </select>
-                                    <button 
+                                    <button
                                         onClick={() => openAddModal('video')}
                                         className="bg-[#b0f020] text-black px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 hover:bg-[#9de018] shadow-lg shadow-[#b0f020]/10 transition-colors"
                                     >
@@ -1033,13 +1069,13 @@ const AdminDashboard = () => {
                                                 </td>
                                                 <td className="px-6 py-4 text-right whitespace-nowrap">
                                                     <div className="flex items-center justify-end gap-2">
-                                                        <button 
+                                                        <button
                                                             onClick={() => openEditModal('video', vid)}
                                                             className="text-gray-400 hover:text-[#b0f020] transition-colors p-2 bg-white/5 rounded-xl border border-transparent hover:border-[#b0f020]/25"
                                                         >
                                                             <Edit3 size={13} />
                                                         </button>
-                                                        <button 
+                                                        <button
                                                             onClick={() => handleDelete('video', vid.id, vid.title)}
                                                             className="text-gray-400 hover:text-red-500 transition-colors p-2 bg-white/5 rounded-xl border border-transparent hover:border-red-500/25"
                                                         >
@@ -1059,237 +1095,372 @@ const AdminDashboard = () => {
                                 )}
                             </div>
                         </div>
+                        // </div>
                     )}
 
-                </motion.div>
-            </main>
+                {/* ORDERS TAB */}
+                {activeTab === 'orders' && (
+                    <div className="flex flex-col gap-6">
+                        {/* Toolbar */}
+                        <div className="flex justify-between items-center bg-[#121612] p-4 rounded-3xl border border-white/5">
+                            <h3 className="text-sm font-bold text-gray-300 flex items-center gap-2"><ShoppingCart size={16} className="text-[#b0f020]" /> Manage Orders</h3>
+                        </div>
 
-            {/* DYNAMIC FORM MODAL (Add / Edit) */}
-            <AnimatePresence>
-                {isModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 overflow-y-auto">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setIsModalOpen(false)}
-                            className="absolute inset-0 bg-[#0a0d0a]/80 backdrop-blur-md"
-                        />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="bg-[#0f120f] border border-white/5 rounded-[2.5rem] w-full max-w-lg p-6 md:p-8 relative z-10 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar"
-                        >
-                            <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
-                                <h3 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                                    <span className="text-[#b0f020] uppercase text-[10px] tracking-widest font-black px-2 py-0.5 bg-[#b0f020]/10 rounded border border-[#b0f020]/15">
-                                        {modalConfig.action}
-                                    </span>
-                                    <span>
-                                        {modalConfig.type === 'user' && 'User Account'}
-                                        {modalConfig.type === 'product' && 'Shop Product'}
-                                        {modalConfig.type === 'productCategory' && 'Product Category'}
-                                        {modalConfig.type === 'videoCategory' && 'Video Category'}
-                                        {modalConfig.type === 'video' && 'Video Library Item'}
-                                    </span>
-                                </h3>
-                                <button 
-                                    onClick={() => setIsModalOpen(false)} 
-                                    className="p-2 hover:bg-white/5 rounded-full transition-colors text-gray-400 hover:text-white"
-                                >
-                                    <X size={18} />
-                                </button>
-                            </div>
-
-                            <form onSubmit={handleFormSubmit} className="space-y-5">
-                                
-                                {/* USER FORM */}
-                                {modalConfig.type === 'user' && (
-                                    <>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Full Name</label>
-                                            <input required name="name" defaultValue={modalConfig.data?.name || ''} placeholder="e.g. John Doe" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Email Address</label>
-                                            <input required type="email" name="email" defaultValue={modalConfig.data?.email || ''} placeholder="e.g. john@example.com" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">System Role</label>
-                                                <select name="role" defaultValue={modalConfig.data?.role || 'Member'} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-[#b0f020] outline-none transition-all text-white cursor-pointer">
-                                                    <option value="Member">Member</option>
-                                                    <option value="Trainer">Trainer</option>
-                                                    <option value="Gym">Gym</option>
-                                                    <option value="Admin">Admin</option>
-                                                </select>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">System Status</label>
-                                                <select name="status" defaultValue={modalConfig.data?.status || 'Active'} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-[#b0f020] outline-none transition-all text-white cursor-pointer">
-                                                    <option value="Active">Active</option>
-                                                    <option value="Suspended">Suspended</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-
-                                {/* PRODUCT FORM */}
-                                {modalConfig.type === 'product' && (
-                                    <>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Product Title</label>
-                                            <input required name="name" defaultValue={modalConfig.data?.name || ''} placeholder="e.g. HydroWhey Protein Isolate" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Category</label>
-                                                <select name="category" defaultValue={modalConfig.data?.category || 'SUPPLEMENTS'} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-[#b0f020] outline-none transition-all text-white cursor-pointer">
-                                                    {pCategoryOptions.map(opt => (
-                                                        <option key={opt} value={opt}>{opt}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Special Badge</label>
-                                                <select name="badge" defaultValue={modalConfig.data?.badge || ''} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-[#b0f020] outline-none transition-all text-white cursor-pointer">
-                                                    <option value="">None</option>
-                                                    <option value="BEST SELLER">BEST SELLER</option>
-                                                    <option value="NEW">NEW</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Retail Price ($)</label>
-                                                <input required type="number" step="0.01" name="price" defaultValue={modalConfig.data?.price || ''} placeholder="e.g. 39.99" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Compare at Price ($)</label>
-                                                <input type="number" step="0.01" name="originalPrice" defaultValue={modalConfig.data?.originalPrice || ''} placeholder="e.g. 49.99 (Optional)" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Image Asset URL</label>
-                                            <input name="image" defaultValue={modalConfig.data?.image || ''} placeholder="Paste custom URL or select a preset below..." className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" id="prodImgUrl" />
-                                            
-                                            {/* Preset Selector */}
-                                            <div className="pt-2">
-                                                <span className="text-[10px] text-gray-500 font-bold block mb-1">Preset Options:</span>
-                                                <div className="flex gap-2 flex-wrap max-h-24 overflow-y-auto custom-scrollbar p-1">
-                                                    {presetImages.products.map((preset, pIdx) => (
-                                                        <button 
-                                                            key={pIdx}
-                                                            type="button" 
-                                                            onClick={() => {
-                                                                const el = document.getElementById('prodImgUrl');
-                                                                if (el) el.value = preset.url;
-                                                            }}
-                                                            className="text-[9px] px-2 py-1 bg-white/5 hover:bg-[#b0f020]/25 rounded border border-white/5 transition-colors font-medium"
-                                                        >
-                                                            {preset.name}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Description Details</label>
-                                            <textarea required name="description" defaultValue={modalConfig.data?.description || ''} placeholder="Write product brief summary..." rows={3} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white resize-none" />
-                                        </div>
-                                    </>
-                                )}
-
-                                {/* PRODUCT CATEGORY & VIDEO CATEGORY FORMS (identical structure) */}
-                                {(modalConfig.type === 'productCategory' || modalConfig.type === 'videoCategory') && (
-                                    <>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Category Title Name</label>
-                                            <input required name="name" defaultValue={modalConfig.data?.name || ''} placeholder="e.g. Strength Training" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Description Details</label>
-                                            <textarea required name="description" defaultValue={modalConfig.data?.description || ''} placeholder="Write brief category role..." rows={3} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white resize-none" />
-                                        </div>
-                                    </>
-                                )}
-
-                                {/* VIDEO FORM */}
-                                {modalConfig.type === 'video' && (
-                                    <>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Video Title</label>
-                                            <input required name="title" defaultValue={modalConfig.data?.title || ''} placeholder="e.g. Full Body HIIT Workout" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Library Category</label>
-                                                <select name="category" defaultValue={modalConfig.data?.category || 'Workout'} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-[#b0f020] outline-none transition-all text-white cursor-pointer">
-                                                    {vCategoryOptions.map(opt => (
-                                                        <option key={opt} value={opt}>{opt}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Targeted Muscle(s)</label>
-                                                <input required name="targetedMuscle" defaultValue={modalConfig.data?.targetedMuscle || ''} placeholder="e.g. Abs, Core" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Session Duration</label>
-                                                <input required name="duration" defaultValue={modalConfig.data?.duration || '15:00'} placeholder="e.g. 20:00" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Video File/Resource Link</label>
-                                                <input required name="videoUrl" defaultValue={modalConfig.data?.videoUrl || ''} placeholder="e.g. mp4 link or YouTube URL" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Thumbnail Asset URL</label>
-                                            <input name="thumbnail" defaultValue={modalConfig.data?.thumbnail || ''} placeholder="Paste custom image URL or select a preset..." className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" id="vidThumbUrl" />
-                                            
-                                            {/* Preset Selector */}
-                                            <div className="pt-2">
-                                                <span className="text-[10px] text-gray-500 font-bold block mb-1">Preset Options:</span>
-                                                <div className="flex gap-2 flex-wrap max-h-24 overflow-y-auto custom-scrollbar p-1">
-                                                    {presetImages.videos.map((preset, pIdx) => (
-                                                        <button 
-                                                            key={pIdx}
-                                                            type="button" 
-                                                            onClick={() => {
-                                                                const el = document.getElementById('vidThumbUrl');
-                                                                if (el) el.value = preset.url;
-                                                            }}
-                                                            className="text-[9px] px-2 py-1 bg-white/5 hover:bg-[#b0f020]/25 rounded border border-white/5 transition-colors font-medium"
-                                                        >
-                                                            {preset.name}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Description Details</label>
-                                            <textarea required name="description" defaultValue={modalConfig.data?.description || ''} placeholder="Write workout details description..." rows={3} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white resize-none" />
-                                        </div>
-                                    </>
-                                )}
-
-                                <button
-                                    type="submit"
-                                    className="w-full bg-[#b0f020] text-black font-extrabold py-4 rounded-2xl hover:bg-[#9de018] shadow-lg shadow-[#b0f020]/15 transition-all mt-4 hover:scale-[1.01] active:scale-[0.99] text-xs uppercase tracking-wider"
-                                >
-                                    {modalConfig.action === 'add' ? 'Confirm and Add' : 'Save Changes'}
-                                </button>
-                            </form>
-                        </motion.div>
+                        <div className="overflow-x-auto rounded-[2rem] border border-white/5 bg-[#121612]">
+                            <table className="w-full text-left min-w-[700px]">
+                                <thead className="bg-white/[0.02] text-[10px] text-gray-500 uppercase tracking-widest font-black border-b border-white/5">
+                                    <tr>
+                                        <th className="px-6 py-5">Order ID</th>
+                                        <th className="px-6 py-5">User</th>
+                                        <th className="px-6 py-5">Amount</th>
+                                        {/* <th className="px-6 py-5">Status</th> */}
+                                        <th className="px-6 py-5">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {orders.map((order) => (
+                                        <tr key={order.id} className="hover:bg-white/[0.01] transition-colors group">
+                                            <td className="px-6 py-5 whitespace-nowrap text-xs font-bold text-gray-300">#{order.id}</td>
+                                            <td className="px-6 py-5 whitespace-nowrap text-sm font-bold">{order.user} <span className="text-[10px] text-gray-500 font-normal ml-2">({order.items} items)</span></td>
+                                            <td className="px-6 py-5 whitespace-nowrap font-bold text-[#b0f020] text-sm">EGP {order.amount.toFixed(2)}</td>
+                                            {/* <td className="px-6 py-5 whitespace-nowrap">
+                                                <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border ${order.status === 'Completed' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
+                                                        order.status === 'Pending' ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' :
+                                                            'bg-red-500/10 border-red-500/20 text-red-400'
+                                                    }`}>
+                                                    {order.status}
+                                                </span>
+                                            </td> */}
+                                            <td className="px-6 py-5 whitespace-nowrap text-xs text-gray-400 font-medium">{order.date}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
-            </AnimatePresence>
-        </div>
+
+                {/* BOOKINGS TAB */}
+                {activeTab === 'bookings' && (
+                    <div className="flex flex-col gap-6">
+                        {/* Toolbar */}
+                        <div className="flex justify-between items-center bg-[#121612] p-4 rounded-3xl border border-white/5">
+                            <h3 className="text-sm font-bold text-gray-300 flex items-center gap-2"><Calendar size={16} className="text-[#b0f020]" /> Manage Bookings</h3>
+                        </div>
+
+                        <div className="overflow-x-auto rounded-[2rem] border border-white/5 bg-[#121612]">
+                            <table className="w-full text-left min-w-[700px]">
+                                <thead className="bg-white/[0.02] text-[10px] text-gray-500 uppercase tracking-widest font-black border-b border-white/5">
+                                    <tr>
+                                        <th className="px-6 py-5">Booking ID</th>
+                                        <th className="px-6 py-5">User</th>
+                                        <th className="px-6 py-5">Type / Trainer</th>
+                                        {/* <th className="px-6 py-5">Status</th> */}
+                                        <th className="px-6 py-5">Date & Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {bookings.map((booking) => (
+                                        <tr key={booking.id} className="hover:bg-white/[0.01] transition-colors group">
+                                            <td className="px-6 py-5 whitespace-nowrap text-xs font-bold text-gray-300">#{booking.id}</td>
+                                            <td className="px-6 py-5 whitespace-nowrap text-sm font-bold">{booking.user}</td>
+                                            <td className="px-6 py-5 whitespace-nowrap">
+                                                <p className="text-xs font-bold text-[#b0f020]">{booking.type}</p>
+                                                <p className="text-[10px] text-gray-500 font-semibold mt-1">Trainer: {booking.trainer}</p>
+                                            </td>
+                                            {/* <td className="px-6 py-5 whitespace-nowrap">
+                                                <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border ${booking.status === 'Confirmed' ? 'bg-green-500/10 border-green-500/20 text-green-400' :
+                                                        booking.status === 'Pending' ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400' :
+                                                            'bg-red-500/10 border-red-500/20 text-red-400'
+                                                    }`}>
+                                                    {booking.status}
+                                                </span>
+                                            </td> */}
+                                            <td className="px-6 py-5 whitespace-nowrap">
+                                                <p className="text-xs font-bold text-gray-300">{booking.date}</p>
+                                                <p className="text-[10px] text-gray-500 font-semibold mt-1">{booking.time}</p>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+                {/* CONTACT MESSAGES TAB */}
+                {activeTab === 'contact' && (
+                    <div className="flex flex-col gap-6">
+                        {/* Toolbar */}
+                        <div className="flex justify-between items-center bg-[#121612] p-4 rounded-3xl border border-white/5">
+                            <h3 className="text-sm font-bold text-gray-300 flex items-center gap-2"><MessageSquare size={16} className="text-[#b0f020]" /> Contact Messages</h3>
+                        </div>
+
+                        <div className="overflow-x-auto rounded-[2rem] border border-white/5 bg-[#121612]">
+                            <table className="w-full text-left min-w-[700px]">
+                                <thead className="bg-white/[0.02] text-[10px] text-gray-500 uppercase tracking-widest font-black border-b border-white/5">
+                                    <tr>
+                                        <th className="px-6 py-5">Date</th>
+                                        <th className="px-6 py-5">Sender</th>
+                                        <th className="px-6 py-5">Email</th>
+                                        <th className="px-6 py-5">Message</th>
+                                        {/* <th className="px-6 py-5 text-right">Status</th> */}
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {contactMessages.map((msg) => (
+                                        <tr key={msg.id} className="hover:bg-white/[0.01] transition-colors group">
+                                            <td className="px-6 py-5 whitespace-nowrap text-xs text-gray-400 font-medium">{msg.date}</td>
+                                            <td className="px-6 py-5 whitespace-nowrap">
+                                                <p className="text-sm font-bold text-gray-200">{msg.name}</p>
+                                                {/* <p className="text-[10px] text-gray-500 font-semibold">{msg.email}</p> */}
+                                            </td>
+                                            <td className="px-6 py-5 whitespace-nowrap text-xs font-bold text-[#b0f020]">{msg.email}</td>
+                                            <td className="px-6 py-5 text-xs text-gray-400 max-w-md truncate" title={msg.message}>
+                                                {msg.message}
+                                            </td>
+                                            {/* <td className="px-6 py-5 whitespace-nowrap text-right">
+                                                <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border ${msg.status === 'Read' ? 'bg-gray-500/10 border-gray-500/20 text-gray-400' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'}`}>
+                                                    {msg.status}
+                                                </span>
+                                            </td> */}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+            </motion.div>
+        </main>
+
+            {/* DYNAMIC FORM MODAL (Add / Edit) */ }
+    <AnimatePresence>
+        {isModalOpen && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 overflow-y-auto">
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setIsModalOpen(false)}
+                    className="absolute inset-0 bg-[#0a0d0a]/80 backdrop-blur-md"
+                />
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                    className="bg-[#0f120f] border border-white/5 rounded-[2.5rem] w-full max-w-lg p-6 md:p-8 relative z-10 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar"
+                >
+                    <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
+                        <h3 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                            <span className="text-[#b0f020] uppercase text-[10px] tracking-widest font-black px-2 py-0.5 bg-[#b0f020]/10 rounded border border-[#b0f020]/15">
+                                {modalConfig.action}
+                            </span>
+                            <span>
+                                {modalConfig.type === 'user' && 'User Account'}
+                                {modalConfig.type === 'product' && 'Shop Product'}
+                                {modalConfig.type === 'productCategory' && 'Product Category'}
+                                {modalConfig.type === 'videoCategory' && 'Video Category'}
+                                {modalConfig.type === 'video' && 'Video Library Item'}
+                            </span>
+                        </h3>
+                        <button
+                            onClick={() => setIsModalOpen(false)}
+                            className="p-2 hover:bg-white/5 rounded-full transition-colors text-gray-400 hover:text-white"
+                        >
+                            <X size={18} />
+                        </button>
+                    </div>
+
+                    <form onSubmit={handleFormSubmit} className="space-y-5">
+
+                        {/* USER FORM */}
+                        {modalConfig.type === 'user' && (
+                            <>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Full Name</label>
+                                    <input required name="name" defaultValue={modalConfig.data?.name || ''} placeholder="e.g. John Doe" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Email Address</label>
+                                    <input required type="email" name="email" defaultValue={modalConfig.data?.email || ''} placeholder="e.g. john@example.com" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">System Role</label>
+                                        <select name="role" defaultValue={modalConfig.data?.role || 'Member'} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-[#b0f020] outline-none transition-all text-white cursor-pointer">
+                                            <option value="Member">Member</option>
+                                            <option value="Trainer">Trainer</option>
+                                            <option value="Gym">Gym</option>
+                                            <option value="Admin">Admin</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">System Status</label>
+                                        <select name="status" defaultValue={modalConfig.data?.status || 'Active'} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-[#b0f020] outline-none transition-all text-white cursor-pointer">
+                                            <option value="Active">Active</option>
+                                            <option value="Suspended">Suspended</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {/* PRODUCT FORM */}
+                        {modalConfig.type === 'product' && (
+                            <>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Product Title</label>
+                                    <input required name="name" defaultValue={modalConfig.data?.name || ''} placeholder="e.g. HydroWhey Protein Isolate" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Category</label>
+                                        <select name="category" defaultValue={modalConfig.data?.category || 'SUPPLEMENTS'} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-[#b0f020] outline-none transition-all text-white cursor-pointer">
+                                            {pCategoryOptions.map(opt => (
+                                                <option key={opt} value={opt}>{opt}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Special Badge</label>
+                                        <select name="badge" defaultValue={modalConfig.data?.badge || ''} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-[#b0f020] outline-none transition-all text-white cursor-pointer">
+                                            <option value="">None</option>
+                                            <option value="BEST SELLER">BEST SELLER</option>
+                                            <option value="NEW">NEW</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Retail Price ($)</label>
+                                        <input required type="number" step="0.01" name="price" defaultValue={modalConfig.data?.price || ''} placeholder="e.g. 39.99" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Compare at Price ($)</label>
+                                        <input type="number" step="0.01" name="originalPrice" defaultValue={modalConfig.data?.originalPrice || ''} placeholder="e.g. 49.99 (Optional)" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Image Asset URL</label>
+                                    <input name="image" defaultValue={modalConfig.data?.image || ''} placeholder="Paste custom URL or select a preset below..." className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" id="prodImgUrl" />
+
+                                    {/* Preset Selector */}
+                                    <div className="pt-2">
+                                        <span className="text-[10px] text-gray-500 font-bold block mb-1">Preset Options:</span>
+                                        <div className="flex gap-2 flex-wrap max-h-24 overflow-y-auto custom-scrollbar p-1">
+                                            {presetImages.products.map((preset, pIdx) => (
+                                                <button
+                                                    key={pIdx}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const el = document.getElementById('prodImgUrl');
+                                                        if (el) el.value = preset.url;
+                                                    }}
+                                                    className="text-[9px] px-2 py-1 bg-white/5 hover:bg-[#b0f020]/25 rounded border border-white/5 transition-colors font-medium"
+                                                >
+                                                    {preset.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Description Details</label>
+                                    <textarea required name="description" defaultValue={modalConfig.data?.description || ''} placeholder="Write product brief summary..." rows={3} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white resize-none" />
+                                </div>
+                            </>
+                        )}
+
+                        {/* PRODUCT CATEGORY & VIDEO CATEGORY FORMS (identical structure) */}
+                        {(modalConfig.type === 'productCategory' || modalConfig.type === 'videoCategory') && (
+                            <>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Category Title Name</label>
+                                    <input required name="name" defaultValue={modalConfig.data?.name || ''} placeholder="e.g. Strength Training" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Description Details</label>
+                                    <textarea required name="description" defaultValue={modalConfig.data?.description || ''} placeholder="Write brief category role..." rows={3} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white resize-none" />
+                                </div>
+                            </>
+                        )}
+
+                        {/* VIDEO FORM */}
+                        {modalConfig.type === 'video' && (
+                            <>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Video Title</label>
+                                    <input required name="title" defaultValue={modalConfig.data?.title || ''} placeholder="e.g. Full Body HIIT Workout" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Library Category</label>
+                                        <select name="category" defaultValue={modalConfig.data?.category || 'Workout'} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-4 text-sm focus:ring-2 focus:ring-[#b0f020] outline-none transition-all text-white cursor-pointer">
+                                            {vCategoryOptions.map(opt => (
+                                                <option key={opt} value={opt}>{opt}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Targeted Muscle(s)</label>
+                                        <input required name="targetedMuscle" defaultValue={modalConfig.data?.targetedMuscle || ''} placeholder="e.g. Abs, Core" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Session Duration</label>
+                                        <input required name="duration" defaultValue={modalConfig.data?.duration || '15:00'} placeholder="e.g. 20:00" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Video File/Resource Link</label>
+                                        <input required name="videoUrl" defaultValue={modalConfig.data?.videoUrl || ''} placeholder="e.g. mp4 link or YouTube URL" className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Thumbnail Asset URL</label>
+                                    <input name="thumbnail" defaultValue={modalConfig.data?.thumbnail || ''} placeholder="Paste custom image URL or select a preset..." className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white" id="vidThumbUrl" />
+
+                                    {/* Preset Selector */}
+                                    <div className="pt-2">
+                                        <span className="text-[10px] text-gray-500 font-bold block mb-1">Preset Options:</span>
+                                        <div className="flex gap-2 flex-wrap max-h-24 overflow-y-auto custom-scrollbar p-1">
+                                            {presetImages.videos.map((preset, pIdx) => (
+                                                <button
+                                                    key={pIdx}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const el = document.getElementById('vidThumbUrl');
+                                                        if (el) el.value = preset.url;
+                                                    }}
+                                                    className="text-[9px] px-2 py-1 bg-white/5 hover:bg-[#b0f020]/25 rounded border border-white/5 transition-colors font-medium"
+                                                >
+                                                    {preset.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Description Details</label>
+                                    <textarea required name="description" defaultValue={modalConfig.data?.description || ''} placeholder="Write workout details description..." rows={3} className="w-full bg-[#151a15] border border-white/5 rounded-2xl py-3 px-5 text-sm focus:ring-2 focus:ring-[#b0f020] focus:border-transparent outline-none transition-all text-white resize-none" />
+                                </div>
+                            </>
+                        )}
+
+                        <button
+                            type="submit"
+                            className="w-full bg-[#b0f020] text-black font-extrabold py-4 rounded-2xl hover:bg-[#9de018] shadow-lg shadow-[#b0f020]/15 transition-all mt-4 hover:scale-[1.01] active:scale-[0.99] text-xs uppercase tracking-wider"
+                        >
+                            {modalConfig.action === 'add' ? 'Confirm and Add' : 'Save Changes'}
+                        </button>
+                    </form>
+                </motion.div>
+            </div>
+        )}
+    </AnimatePresence>
+        </div >
     );
 };
 

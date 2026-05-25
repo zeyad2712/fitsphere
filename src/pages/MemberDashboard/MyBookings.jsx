@@ -23,24 +23,24 @@ const MyBookings = () => {
         {
             id: "FS-BK-918231",
             gymName: "FitSphere Elite",
-            gymPrice: "$80/mo",
+            gymPrice: "80 EGP/mo",
             selectedDate: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0], // 2 days in future
             sessionType: "Personal Training",
             cardNumber: "1111",
             cardName: "Ziad Waleed",
-            totalAmount: "$91.20",
+            totalAmount: "91.20 EGP",
             status: "Upcoming",
             createdAt: new Date().toISOString()
         },
         {
             id: "FS-BK-409121",
             gymName: "PowerHouse Gym",
-            gymPrice: "$120/mo",
+            gymPrice: "120 EGP/mo",
             selectedDate: new Date(Date.now() - 86400000 * 3).toISOString().split('T')[0], // 3 days in past
             sessionType: "Personal Training",
             cardNumber: "2222",
             cardName: "Ziad Waleed",
-            totalAmount: "$136.80",
+            totalAmount: "136.80 EGP",
             status: "Completed",
             createdAt: new Date(Date.now() - 86400000 * 4).toISOString()
         }

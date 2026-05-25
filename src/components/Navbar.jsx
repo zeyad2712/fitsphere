@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Activity, Heart, ShoppingCart, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
+  }, [location]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,12 +48,21 @@ const Navbar = () => {
         </div>
         {/* Auth Actions */}
         <div className="hidden md:flex items-center gap-4">
-          <Link to="/login" className="text-white hover:text-[#b0f020] font-medium transition-colors text-sm">
-            Log in
-          </Link>
-          <Link to="/signup" className="bg-[#b0f020] text-[#0f120f] px-6 py-2 rounded-full font-bold hover:bg-[#9de018] hover:shadow-[0_0_15px_rgba(176,240,32,0.4)] transition-all transform hover:-translate-y-0.5 text-sm">
-            Sign up
-          </Link>
+          {!isAuthenticated && (
+            <>
+              <Link to="/login" className="text-white hover:text-[#b0f020] font-medium transition-colors text-sm">
+                Log in
+              </Link>
+              <Link to="/signup" className="bg-[#b0f020] text-[#0f120f] px-6 py-2 rounded-full font-bold hover:bg-[#9de018] hover:shadow-[0_0_15px_rgba(176,240,32,0.4)] transition-all transform hover:-translate-y-0.5 text-sm">
+                Sign up
+              </Link>
+            </>
+          )}
+          {isAuthenticated && (
+            <Link to="/profile" className="bg-[#b0f020] text-[#0f120f] px-4 py-2 rounded-full font-bold hover:bg-[#9de018] hover:shadow-[0_0_15px_rgba(176,240,32,0.4)] transition-all transform hover:-translate-y-0.5 text-sm flex items-center gap-2">
+              <User size={18} />Profile
+            </Link>
+          )}
           <Link to="/profile" className="bg-[#b0f020] text-[#0f120f] px-4 py-2 rounded-full font-bold hover:bg-[#9de018] hover:shadow-[0_0_15px_rgba(176,240,32,0.4)] transition-all transform hover:-translate-y-0.5 text-sm flex items-center gap-2">
             <User size={18} />Profile
           </Link>

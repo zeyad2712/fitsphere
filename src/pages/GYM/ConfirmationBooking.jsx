@@ -16,7 +16,7 @@ const ConfirmationBooking = () => {
         sessionType = "Personal Training",
         cardNumber = "4321",
         cardName = "Guest User",
-        totalAmount = "$91.20",
+        totalAmount = "91.20 EGP",
         bookingRef = "FS-BK-721839"
     } = location.state || {};
 
@@ -128,7 +128,7 @@ const ConfirmationBooking = () => {
                                     {/* Total Price */}
                                     <div>
                                         <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest block mb-1">Amount Paid</span>
-                                        <p className="font-black text-lg text-[#b0f020] font-mono">{totalAmount}</p>
+                                        <p className="font-black text-lg text-[#b0f020] font-mono">{totalAmount?.toString().replace('$', '').replace(' EGP', '')} EGP</p>
                                     </div>
                                 </div>
                             </div>

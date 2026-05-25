@@ -211,7 +211,7 @@ const Wishlist = () => {
                         <div className="relative z-10">
                             <h2 className="text-3xl font-black uppercase italic mb-4">Ready to elevate?</h2>
                             <p className="text-gray-400 max-w-md mb-8 font-medium">
-                                These items are in high demand. Complete your order today and get free shipping on orders over $75.
+                                These items are in high demand. Complete your order today and get free shipping on orders over 75 EGP.
                             </p>
                             <Link to="/cart" className="flex items-center gap-3 text-[#b0f020] font-black uppercase tracking-widest text-xs hover:underline">
                                 Go to Checkout <ArrowRight size={16} />

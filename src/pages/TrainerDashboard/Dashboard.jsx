@@ -17,7 +17,7 @@ const TrainerDashboard = () => {
     const stats = [
         { label: 'Total Clients', value: '24', icon: Users, color: '#b0f020', trend: '+12%' },
         { label: 'Active Sessions', value: '8', icon: Clock, color: '#3b82f6', trend: 'Today' },
-        { label: 'Monthly Revenue', value: '$4,250', icon: DollarSign, color: '#10b981', trend: '+18%' },
+        { label: 'Monthly Revenue', value: '4,250 EGP', icon: DollarSign, color: '#10b981', trend: '+18%' },
         { label: 'Avg Rating', value: '4.9', icon: Star, color: '#f59e0b', trend: '48 Reviews' }
     ];
 

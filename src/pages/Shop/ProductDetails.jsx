@@ -207,7 +207,7 @@ const ProductDetails = () => {
                         <div className="space-y-3 pt-6 border-t border-[#1c221c]">
                             <div className="flex items-center gap-3 text-sm text-gray-300">
                                 <Truck size={18} className="text-[#b0f020]" />
-                                <span>Free worldwide shipping on orders over $100</span>
+                                <span>Free worldwide shipping on orders over 100 EGP</span>
                             </div>
                             <div className="flex items-center gap-3 text-sm text-gray-300">
                                 <ShieldCheck size={18} className="text-[#b0f020]" />
@@ -355,7 +355,7 @@ const ProductDetails = () => {
                                 </div>
                                 <h3 className="font-bold mb-1 truncate">{related.name}</h3>
                                 <div className="flex justify-between items-center text-sm">
-                                    <span className="text-[#b0f020] font-bold">${related.price.toFixed(2)}</span>
+                                    <span className="text-[#b0f020] font-bold">{related.price.toFixed(2)} EGP</span>
                                     <div className="flex items-center gap-1 text-gray-400">
                                         <Star size={12} fill="currentColor" /> {related.rating}
                                     </div>
