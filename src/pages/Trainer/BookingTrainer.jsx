@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -29,6 +29,15 @@ const BookingTrainer = () => {
     const [isFocused, setIsFocused] = useState('');
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Simulate initial page load
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1200);
+        return () => clearTimeout(timer);
+    }, []);
 
     // Trainer specific booking states
     const [selectedDate, setSelectedDate] = useState(new Date(Date.now() + 86400000).toISOString().split('T')[0]); // tomorrow
@@ -153,6 +162,37 @@ const BookingTrainer = () => {
 
             {/* Loading Overlay */}
             <AnimatePresence>
+                {isLoading && (
+                    <motion.div 
+                        initial={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="fixed inset-0 z-[9999] bg-[#0a0d0a] flex flex-col items-center justify-center gap-6"
+                    >
+                        <div className="relative">
+                            <motion.div
+                                animate={{
+                                    scale: [1, 1.2, 1],
+                                    opacity: [0.3, 0.6, 0.3]
+                                }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                                className="absolute inset-0 bg-[#b0f020] blur-[40px] rounded-full"
+                            />
+                            <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                                className="relative z-10 text-[#b0f020]"
+                            >
+                                <Dumbbell size={54} className="animate-pulse" />
+                            </motion.div>
+                        </div>
+                        <h2 className="text-xl font-bold uppercase tracking-wider text-[#b0f020]">Preparing Checkout...</h2>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Submitting Loading Overlay */}
+            <AnimatePresence>
                 {isSubmitting && (
                     <motion.div 
                         initial={{ opacity: 0 }}
@@ -183,7 +223,12 @@ const BookingTrainer = () => {
                 )}
             </AnimatePresence>
 
-            <div className="pt-28 pb-20 px-6 md:px-12 max-w-6xl mx-auto">
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: isLoading ? 0 : 1, y: isLoading ? 20 : 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="pt-28 pb-20 px-6 md:px-12 max-w-6xl mx-auto"
+            >
                 {/* Back button */}
                 <div className="mb-8">
                     <Link to="/trainers" className="inline-flex items-center gap-2 text-gray-400 hover:text-[#b0f020] transition-colors group">
@@ -472,7 +517,7 @@ const BookingTrainer = () => {
                     </div>
 
                 </div>
-            </div>
+            </motion.div>
 
             <Footer />
         </div>

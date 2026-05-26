@@ -3,6 +3,7 @@ import { useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Check, Calendar, MapPin, Activity, ShieldCheck, Ticket, LayoutDashboard, ArrowRight } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import Barcode from 'react-barcode';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
@@ -145,9 +146,20 @@ const ConfirmationBooking = () => {
                                         includeMargin={false}
                                     />
                                 </div>
+                                <div className="mt-6 mb-2 overflow-hidden px-2 opacity-90">
+                                    <Barcode 
+                                        value={bookingRef} 
+                                        width={1.2} 
+                                        height={35} 
+                                        background="transparent" 
+                                        lineColor="#b0f020" 
+                                        displayValue={false} 
+                                        margin={0}
+                                    />
+                                </div>
                                 <div className="mt-4 text-center">
                                     <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Entry Access Pass</p>
-                                    <p className="text-[8px] text-gray-600 mt-1 leading-relaxed max-w-[150px] mx-auto font-medium">Scan QR Code at gym reception desk to check-in.</p>
+                                    <p className="text-[8px] text-gray-600 mt-1 leading-relaxed max-w-[150px] mx-auto font-medium">Scan QR Code or Barcode at gym reception desk to check-in.</p>
                                 </div>
                             </div>
                         </div>

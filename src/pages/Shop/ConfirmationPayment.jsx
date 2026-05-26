@@ -17,6 +17,33 @@ const ConfirmationPayment = () => {
     // Generate a random order number
     const orderNumber = "FS-" + Math.floor(Math.random() * 900000 + 100000);
 
+    const handleDownloadInvoice = () => {
+        const invoiceContent = `
+FITSPHERE ELITE
+==========================
+INVOICE
+--------------------------
+Order Number: ${orderNumber}
+Status: Processing
+Email: athlete@fitsphere.com
+Date: ${new Date().toLocaleDateString()}
+
+Thank you for your purchase! 
+Your gear is getting ready to be shipped.
+==========================
+        `.trim();
+
+        const blob = new Blob([invoiceContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Invoice-${orderNumber}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
     return (
         <div className="bg-[#0a0d0a] min-h-screen text-white font-sans selection:bg-[#b0f020] selection:text-black pt-20">
             <Navbar />
@@ -85,7 +112,7 @@ const ConfirmationPayment = () => {
                                 <Download size={14} />
                                 <span className="text-[10px] font-black uppercase tracking-widest">Invoice</span>
                             </div>
-                            <button className="text-sm font-bold hover:text-[#b0f020] transition-colors">Download</button>
+                            <button onClick={handleDownloadInvoice} className="text-sm font-bold hover:text-[#b0f020] transition-colors">Download</button>
                         </div>
                         <div className="space-y-2">
                             <div className="flex items-center justify-center gap-2 text-gray-500">

@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
+import Barcode from 'react-barcode';
 import SidebarDashboard from '../../components/SidebarDashboard';
 
 const MyBookings = () => {
@@ -291,6 +292,18 @@ const MyBookings = () => {
                                         fgColor={"#b0f020"}
                                         level={"H"}
                                         includeMargin={false}
+                                    />
+                                </div>
+
+                                <div className="mb-4 overflow-hidden px-2 opacity-90">
+                                    <Barcode 
+                                        value={selectedBooking.id} 
+                                        width={1.2} 
+                                        height={35} 
+                                        background="transparent" 
+                                        lineColor="#b0f020" 
+                                        displayValue={false} 
+                                        margin={0}
                                     />
                                 </div>
 
