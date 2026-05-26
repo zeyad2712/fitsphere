@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Target, Users, Zap, Shield, Heart, Award } from 'lucide-react';
+import { Target, Users, Zap, Shield, Heart, Award, Eye, Compass } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -121,6 +121,47 @@ const AboutUs = () => {
                                 </div>
                             ))}
                         </motion.div>
+                    </div>
+                </section>
+
+                {/* Vision & Mission Section */}
+                <section className="py-24 bg-[#0a0d0a]/50 relative z-20 border-y border-white/5">
+                    <div className="max-w-7xl mx-auto px-6 md:px-12">
+                        <div className="grid md:grid-cols-2 gap-10">
+                            {/* Vision Card */}
+                            <motion.div 
+                                variants={itemVariants}
+                                className="bg-[#121612]/60 backdrop-blur-xl border border-white/5 hover:border-[#b0f020]/25 rounded-[2.5rem] p-10 md:p-12 relative overflow-hidden transition-all duration-300 group flex flex-col justify-between"
+                            >
+                                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#b0f020]/20 to-transparent blur-sm" />
+                                <div>
+                                    <div className="w-14 h-14 bg-[#b0f020]/5 rounded-2xl flex items-center justify-center mb-8 border border-[#b0f020]/15 group-hover:border-[#b0f020]/30 transition-colors">
+                                        <Eye className="w-7 h-7 text-[#b0f020]" />
+                                    </div>
+                                    <h3 className="text-3xl font-black tracking-tight mb-4 text-white uppercase">Our Vision</h3>
+                                    <p className="text-gray-400 text-base leading-relaxed font-light">
+                                        To become the leading digital companion for every individual seeking a healthy lifestyle, by creating a world where fitness is flexible, smart, and accessible anytime and anywhere, powered by advanced AI technology and data-driven insights that deliver sustainable results.
+                                    </p>
+                                </div>
+                            </motion.div>
+
+                            {/* Mission Card */}
+                            <motion.div 
+                                variants={itemVariants}
+                                className="bg-[#121612]/60 backdrop-blur-xl border border-white/5 hover:border-[#b0f020]/25 rounded-[2.5rem] p-10 md:p-12 relative overflow-hidden transition-all duration-300 group flex flex-col justify-between"
+                            >
+                                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#b0f020]/20 to-transparent blur-sm" />
+                                <div>
+                                    <div className="w-14 h-14 bg-[#b0f020]/5 rounded-2xl flex items-center justify-center mb-8 border border-[#b0f020]/15 group-hover:border-[#b0f020]/30 transition-colors">
+                                        <Compass className="w-7 h-7 text-[#b0f020]" />
+                                    </div>
+                                    <h3 className="text-3xl font-black tracking-tight mb-4 text-white uppercase">Our Mission</h3>
+                                    <p className="text-gray-400 text-base leading-relaxed font-light">
+                                        Our mission is to empower individuals to achieve their health and fitness goals through the integrated FitSphere platform, by providing unprecedented access to a network of gyms and certified trainers with flexible booking options, utilizing artificial intelligence to deliver personalized workout and nutrition plans with accurate progress tracking, simplifying the user experience by merging booking, shopping, and education into one seamless environment, and supporting the local fitness community by enabling gyms and trainers to reach a wider audience efficiently and effectively.
+                                    </p>
+                                </div>
+                            </motion.div>
+                        </div>
                     </div>
                 </section>
 

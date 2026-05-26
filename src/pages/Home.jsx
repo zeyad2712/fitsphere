@@ -36,6 +36,9 @@ const Counter = ({ value }) => {
 
 const Home = () => {
     const navigate = useNavigate();
+    const scrollToFeatures = () => {
+        document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+    };
     const stats = [
         { value: '500K+', label: 'ACTIVE USERS' },
         { value: '1,200+', label: 'DAILY PLANS' },
@@ -134,10 +137,16 @@ const Home = () => {
                         variants={fadeInUp}
                         className="flex flex-col sm:flex-row gap-4 justify-center"
                     >
-                        <button className="bg-[#b0f020] text-[#0f120f] px-8 py-4 rounded-full font-bold text-lg hover:bg-[#9de018] hover:shadow-[0_0_20px_rgba(176,240,32,0.5)] transition-all transform hover:-translate-y-1">
+                        <button 
+                            onClick={() => navigate('/signup')}
+                            className="bg-[#b0f020] text-[#0f120f] px-8 py-4 rounded-full font-bold text-lg hover:bg-[#9de018] hover:shadow-[0_0_20px_rgba(176,240,32,0.5)] transition-all transform hover:-translate-y-1"
+                        >
                             Get Started Now
                         </button>
-                        <button className="bg-transparent border border-gray-600 text-white px-8 py-4 rounded-full font-medium text-lg hover:border-[#b0f020] hover:bg-[#b0f020]/10 transition-all">
+                        <button 
+                            onClick={scrollToFeatures}
+                            className="bg-transparent border border-gray-600 text-white px-8 py-4 rounded-full font-medium text-lg hover:border-[#b0f020] hover:bg-[#b0f020]/10 transition-all"
+                        >
                             Explore Features
                         </button>
                     </motion.div>

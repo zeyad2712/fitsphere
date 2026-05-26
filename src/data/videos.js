@@ -1,9 +1,9 @@
 export const videos = [
     {
         id: 1,
-        title: "Full Body HIIT Blast",
+        title: "Dumbell Chest Press",
         category: "Workout",
-        targetedMuscle: "Full Body",
+        targetedMuscle: "Chest",
         thumbnail: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=800",
         videoUrl: "https://www.youtube.com/watch?v=dGqI0Z5ul4k&t=8s",
         description: "A high-intensity interval training session designed to torch calories and build overall endurance. Suitable for all levels, but expect a challenge!",
@@ -11,11 +11,11 @@ export const videos = [
     },
     {
         id: 2,
-        title: "Upper Body Strength Building",
+        title: "Incline Chest Press",
         category: "Workout",
-        targetedMuscle: "Chest, Back, Arms",
+        targetedMuscle: "Chest",
         thumbnail: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=800",
-        videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+        videoUrl: "https://youtu.be/uIzbJX5EVIY?si=9IKdMo30ukSyXPp5",
         description: "Focus on building strength and definition in your upper body with these targeted exercises utilizing progressive overload techniques.",
         duration: "20:00"
     },

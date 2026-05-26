@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ChevronUp, MessageSquare, X, Send, Bot, Dumbbell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -75,6 +75,17 @@ const PageLoader = () => (
         </div>
     </div>
 );
+
+// Scroll to top on navigation component
+const ScrollToTopOnNavigate = () => {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+};
 
 // Scroll-to-top button component
 const ScrollToTop = () => {
@@ -285,6 +296,7 @@ const App = () => {
 
     return (
         <Router>
+            <ScrollToTopOnNavigate />
             <ScrollToTop />
             <ChatBot />
             <Suspense fallback={<PageLoader />}>

@@ -32,6 +32,7 @@ import {
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const Profile = () => {
     const [activeTab, setActiveTab] = useState('personal');
@@ -48,18 +49,196 @@ const Profile = () => {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisData, setAnalysisData] = useState(null);
 
-    const handleAnalyzeLogs = () => {
+    const parseInlineStyles = (text) => {
+        const parts = [];
+        let currentIndex = 0;
+        const regex = /(\*\*.*?\*\*|`.*?`|⚠️)/g;
+        let match;
+        
+        while ((match = regex.exec(text)) !== null) {
+            const matchIndex = match.index;
+            if (matchIndex > currentIndex) {
+                parts.push(text.substring(currentIndex, matchIndex));
+            }
+            
+            const matchedText = match[0];
+            if (matchedText.startsWith('**') && matchedText.endsWith('**')) {
+                const innerText = matchedText.slice(2, -2);
+                parts.push(
+                    <strong key={matchIndex} className="text-white font-extrabold text-[#b0f020]/90">
+                        {innerText}
+                    </strong>
+                );
+            } else if (matchedText.startsWith('`') && matchedText.endsWith('`')) {
+                const innerText = matchedText.slice(1, -1);
+                parts.push(
+                    <code key={matchIndex} className="font-mono text-xs text-[#b0f020] bg-[#b0f020]/10 px-1.5 py-0.5 rounded border border-[#b0f020]/25">
+                        {innerText}
+                    </code>
+                );
+            } else if (matchedText === '⚠️') {
+                parts.push(
+                    <span key={matchIndex} className="inline-block animate-bounce mr-1">⚠️</span>
+                );
+            }
+            currentIndex = regex.lastIndex;
+        }
+        
+        if (currentIndex < text.length) {
+            parts.push(text.substring(currentIndex));
+        }
+        
+        return parts.length > 0 ? parts : text;
+    };
+
+    const formatResponse = (text) => {
+        if (!text) return null;
+        const lines = text.split('\n');
+        return (
+            <div className="space-y-3 text-sm leading-[1.7] text-gray-300">
+                {lines.map((line, idx) => {
+                    const cleanLine = line.trim();
+                    if (!cleanLine) return <div key={idx} className="h-2" />;
+
+                    if (cleanLine.startsWith('###')) {
+                        return (
+                            <h4 key={idx} className="text-sm font-extrabold text-white mt-4 mb-2 tracking-tight flex items-center gap-2 border-l-2 border-[#b0f020] pl-2.5">
+                                {parseInlineStyles(cleanLine.replace(/^###\s*/, ''))}
+                            </h4>
+                        );
+                    }
+                    if (cleanLine.startsWith('##') || cleanLine.startsWith('#')) {
+                        return (
+                            <h3 key={idx} className="text-base font-black text-[#b0f020] mt-5 mb-3 tracking-tight">
+                                {parseInlineStyles(cleanLine.replace(/^#+\s*/, ''))}
+                            </h3>
+                        );
+                    }
+
+                    if (cleanLine.startsWith('-') || cleanLine.startsWith('*')) {
+                        return (
+                            <div key={idx} className="flex items-start gap-2.5 pl-1 my-1 group/item">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#b0f020] mt-2 shadow-[0_0_8px_rgba(176,240,32,0.8)] group-hover/item:scale-125 transition-transform" />
+                                <span className="flex-1 text-gray-300">
+                                    {parseInlineStyles(cleanLine.substring(1).trim())}
+                                </span>
+                            </div>
+                        );
+                    }
+
+                    const numMatch = cleanLine.match(/^(\d+)\.\s+(.*)/);
+                    if (numMatch) {
+                        return (
+                            <div key={idx} className="flex items-start gap-2.5 pl-1 my-1">
+                                <span className="text-[10px] font-black text-[#b0f020] bg-[#b0f020]/10 px-1.5 py-0.5 rounded border border-[#b0f020]/20 min-w-[1.6rem] text-center">
+                                    {numMatch[1]}
+                                </span>
+                                <span className="flex-1 text-gray-300">
+                                    {parseInlineStyles(numMatch[2])}
+                                </span>
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <p key={idx} className="text-gray-300">
+                            {parseInlineStyles(cleanLine)}
+                        </p>
+                    );
+                })}
+            </div>
+        );
+    };
+
+    const handleAnalyzeLogs = async () => {
         setIsAnalyzing(true);
-        setTimeout(() => {
+        
+        // Local calculations based on user input logs
+        const totalWorkouts = workoutLogs.length;
+        const totalCalories = nutritionLogs.reduce((acc, log) => acc + (parseInt(log.calories) || 0), 0);
+        const proteinAvg = (nutritionLogs.reduce((acc, log) => acc + (parseInt(log.protein) || 0), 0) / (nutritionLogs.length || 1)).toFixed(1) + 'g';
+        
+        const exerciseCounts = {};
+        workoutLogs.forEach(log => {
+            exerciseCounts[log.exercise] = (exerciseCounts[log.exercise] || 0) + 1;
+        });
+        let topExercise = "None";
+        let maxCount = 0;
+        Object.entries(exerciseCounts).forEach(([ex, count]) => {
+            if (count > maxCount) {
+                maxCount = count;
+                topExercise = ex;
+            }
+        });
+
+        const totalWeight = workoutLogs.reduce((acc, log) => {
+            const w = parseInt(log.weight) || 0;
+            return acc + w;
+        }, 0);
+        const avgWorkoutWeight = (totalWeight / (workoutLogs.length || 1)).toFixed(1) + 'kg';
+
+        try {
+            const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+            if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
+                throw new Error("API Key not configured.");
+            }
+
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const modelName = import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash";
+            const model = genAI.getGenerativeModel({ model: modelName });
+
+            const prompt = `
+                You are the FitSphere AI Fitness & Nutrition Analyst.
+                Analyze this user's fitness profile and logs to provide personalized coaching feedback.
+                
+                USER PROFILE:
+                - Name: ${userData.name}
+                - Fitness Goal: ${userData.goal}
+                - Weight: ${userData.weight}
+                - Height: ${userData.height}
+                - Age: ${userData.age}
+                - Level: ${userData.level}
+                
+                WORKOUT LOGS (Last ${workoutLogs.length} sessions):
+                ${JSON.stringify(workoutLogs, null, 2)}
+                
+                NUTRITION LOGS (Last ${nutritionLogs.length} meals):
+                ${JSON.stringify(nutritionLogs, null, 2)}
+                
+                Provide a structured, motivational fitness report containing:
+                1. **Progress Assessment**: Quick summary of their stats.
+                2. **Strengths**: What they are doing right.
+                3. **Areas of Improvement**: What needs work (e.g. caloric balance, protein intake, muscle recovery).
+                4. **Actionable 3-Step Plan**: Simple, clear steps to optimize results.
+                
+                Format the response with clean headings (using '###') and bullet points. Keep it punchy and scientific.
+            `;
+
+            const result = await model.generateContent(prompt);
+            const responseText = result.response.text();
+
             setAnalysisData({
-                totalWorkouts: workoutLogs.length,
-                totalCalories: nutritionLogs.reduce((acc, log) => acc + (parseInt(log.calories) || 0), 0),
-                avgWorkoutWeight: '90kg',
-                topExercise: 'Barbell Squat',
-                proteinAvg: '45g'
+                totalWorkouts,
+                totalCalories,
+                avgWorkoutWeight,
+                topExercise,
+                proteinAvg,
+                insight: responseText
             });
+        } catch (error) {
+            console.error("Gemini Analytics Error:", error);
+            // Fallback mock data with descriptive placeholder insight
+            setAnalysisData({
+                totalWorkouts,
+                totalCalories,
+                avgWorkoutWeight,
+                topExercise,
+                proteinAvg,
+                insight: `⚠️ **Google Gemini API Key Not Configured**: Please configure your \`VITE_GEMINI_API_KEY\` in your \`.env\` file to see real-time AI fitness & nutrition analysis.\n\n### General Recommendations:\n- **Protein Balance**: Your average protein intake is ${proteinAvg}. Aim for 1.6-2.2g of protein per kg of bodyweight to support lean muscle hypertrophy.\n- **Lifting Frequency**: You have registered ${totalWorkouts} workouts. To maximize muscle protein synthesis, aim to train each major muscle group 2 times per week.\n- **Caloric Balance**: Monitor your total intake of ${totalCalories} calories closely relative to your daily energy expenditure to meet your goal of **${userData.goal}**.`
+            });
+        } finally {
             setIsAnalyzing(false);
-        }, 2000);
+        }
     };
 
     // Helper to safely extract string from potentially nested API response objects
@@ -518,10 +697,14 @@ const Profile = () => {
                                                         <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">Avg Weight (Workout)</p>
                                                         <p className="text-2xl font-black text-white">{analysisData.avgWorkoutWeight}</p>
                                                     </div>
-                                                </div>
-                                                <div className="mt-6 p-4 bg-[#b0f020]/10 border border-[#b0f020]/20 rounded-2xl text-sm leading-relaxed">
-                                                    <span className="font-bold text-[#b0f020] mr-2">AI Insight:</span> 
-                                                    You are incredibly consistent with your Barbell Squats. Try increasing your daily protein intake slightly to match your heavy lifting load and improve recovery!
+                                                    <div className="mt-6 p-6 bg-[#0f120f]/60 backdrop-blur-xl border border-white/5 rounded-3xl relative overflow-hidden md:col-span-3">
+                                                        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#b0f020]/25 to-transparent blur-sm" />
+                                                        <div className="flex items-center gap-2 mb-4">
+                                                            <Activity className="text-[#b0f020]" size={16} />
+                                                            <span className="font-black text-xs uppercase tracking-widest text-[#b0f020]">AI Insights & Recommendations</span>
+                                                        </div>
+                                                        {formatResponse(analysisData.insight)}
+                                                    </div>
                                                 </div>
                                             </div>
                                         )}

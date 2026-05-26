@@ -16,17 +16,17 @@ const Footer = () => {
               The ultimate fitness app, pushing boundaries, redefining performance. Start your journey with us and achieve your goals.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-8 h-8 rounded-full bg-[#1c221c] flex items-center justify-center text-gray-400 hover:bg-[#b0f020] hover:text-[#0f120f] transition-colors text-xs font-bold">
-                IG
+              <a href="#" className="w-8 h-8 rounded-full bg-[#1c221c] flex items-center justify-center text-gray-400 hover:bg-[#b0f020] hover:text-[#0f120f] transition-all duration-300 text-sm" aria-label="Instagram">
+                <i className="fa-brands fa-instagram"></i>
               </a>
-              <a href="#" className="w-8 h-8 rounded-full bg-[#1c221c] flex items-center justify-center text-gray-400 hover:bg-[#b0f020] hover:text-[#0f120f] transition-colors text-xs font-bold">
-                X
+              <a href="#" className="w-8 h-8 rounded-full bg-[#1c221c] flex items-center justify-center text-gray-400 hover:bg-[#b0f020] hover:text-[#0f120f] transition-all duration-300 text-sm" aria-label="Twitter">
+                <i className="fa-brands fa-x-twitter"></i>
               </a>
-              <a href="#" className="w-8 h-8 rounded-full bg-[#1c221c] flex items-center justify-center text-gray-400 hover:bg-[#b0f020] hover:text-[#0f120f] transition-colors text-xs font-bold">
-                FB
+              <a href="#" className="w-8 h-8 rounded-full bg-[#1c221c] flex items-center justify-center text-gray-400 hover:bg-[#b0f020] hover:text-[#0f120f] transition-all duration-300 text-sm" aria-label="Facebook">
+                <i className="fa-brands fa-facebook-f"></i>
               </a>
-              <a href="#" className="w-8 h-8 rounded-full bg-[#1c221c] flex items-center justify-center text-gray-400 hover:bg-[#b0f020] hover:text-[#0f120f] transition-colors text-xs font-bold">
-                YT
+              <a href="#" className="w-8 h-8 rounded-full bg-[#1c221c] flex items-center justify-center text-gray-400 hover:bg-[#b0f020] hover:text-[#0f120f] transition-all duration-300 text-sm" aria-label="Youtube">
+                <i className="fa-brands fa-youtube"></i>
               </a>
             </div>
           </div>
