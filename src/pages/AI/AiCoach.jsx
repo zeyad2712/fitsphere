@@ -13,7 +13,9 @@ import {
     MoreVertical,
     Activity,
     Copy,
-    Check
+    Check,
+    Menu,
+    X
 } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -29,6 +31,7 @@ const AiCoach = () => {
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [copiedIndex, setCopiedIndex] = useState(null);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const messagesEndRef = useRef(null);
 
     const handleCopy = (text, index) => {
@@ -303,15 +306,40 @@ const AiCoach = () => {
             </div>
 
             <div className="flex flex-1 pt-20 overflow-hidden relative z-10">
+                {/* Sidebar Overlay for mobile */}
+                <AnimatePresence>
+                    {sidebarOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSidebarOpen(false)}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+                        />
+                    )}
+                </AnimatePresence>
+
                 {/* Sidebar */}
                 <motion.aside
-                    variants={sidebarVariants}
-                    className="hidden lg:flex flex-col w-80 border-r border-white/5 bg-[#0f120f]/30 backdrop-blur-5xl p-6"
+                    className={`fixed lg:static top-0 left-0 h-full lg:h-auto z-50 lg:z-0 flex flex-col w-80 border-r border-white/5 bg-[#0a0d0a]/95 lg:bg-[#0f120f]/30 backdrop-blur-5xl p-6 transition-all duration-300 lg:translate-x-0 ${
+                        sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
+                    }`}
                 >
+                    {/* Mobile Close Button */}
+                    <div className="lg:hidden flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+                        <span className="text-xs font-black tracking-widest text-[#b0f020]">CHATS & PLANS</span>
+                        <button
+                            onClick={() => setSidebarOpen(false)}
+                            className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-400 hover:text-white cursor-pointer"
+                        >
+                            <X size={16} />
+                        </button>
+                    </div>
+
                     <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={handleNewConversation}
+                        onClick={() => { handleNewConversation(); setSidebarOpen(false); }}
                         className="flex items-center gap-2 w-full bg-[#b0f020] text-black font-bold py-3.5 px-4 rounded-xl hover:bg-[#9de018] transition-all mb-8 shadow-[0_10px_30px_rgba(176,240,32,0.15)]"
                     >
                         <Plus size={18} /> New Conversation
@@ -335,7 +363,10 @@ const AiCoach = () => {
                                             x: { type: "spring", stiffness: 300, damping: 20 }
                                         }}
                                         className="group flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] hover:bg-white/5 border border-white/5 hover:border-[#b0f020]/20 cursor-pointer transition-all duration-300"
-                                        onClick={() => sendMessage(item.title ? `Give me a detailed plan for: ${item.title}` : "New chat session request")}
+                                        onClick={() => {
+                                            sendMessage(item.title ? `Give me a detailed plan for: ${item.title}` : "New chat session request");
+                                            setSidebarOpen(false);
+                                        }}
                                     >
                                         <div className="flex items-center gap-3 overflow-hidden">
                                             <div className="w-8 h-8 rounded-xl bg-[#b0f020]/5 flex items-center justify-center border border-[#b0f020]/15 group-hover:border-[#b0f020]/30 transition-colors">
@@ -372,37 +403,24 @@ const AiCoach = () => {
                     variants={mainAreaVariants}
                     className="flex-1 flex flex-col relative"
                 >
-                    {/* Chat Header */}
-                    {/* <motion.header
-                        variants={headerVariants}
-                        className="flex items-center justify-between px-8 py-5 border-b border-white/5 bg-[#0a0d0a]/40 backdrop-blur-5xl"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="relative">
-                                <motion.div
-                                    animate={{ boxShadow: ['0 0 0px rgba(176,240,32,0)', '0 0 20px rgba(176,240,32,0.3)', '0 0 0px rgba(176,240,32,0)'] }}
-                                    transition={{ duration: 3, repeat: Infinity }}
-                                    className="w-12 h-12 rounded-2xl bg-[#b0f020]/10 flex items-center justify-center border border-[#b0f020]/20"
-                                >
-                                    <Bot className="text-[#b0f020]" size={24} />
-                                </motion.div>
-                                <motion.div
-                                    animate={{ scale: [1, 1.2, 1] }}
-                                    transition={{ duration: 2, repeat: Infinity }}
-                                    className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-[#0a0d0a] rounded-full"
-                                />
-                            </div>
-                            <div>
-                                <h2 className="text-lg font-bold flex items-center gap-2 tracking-tight">
-                                    FITSPHERE CORE <Sparkles size={14} className="text-[#b0f020] animate-pulse" />
-                                </h2>
-                                <div className="flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">System Operational</p>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.header> */}
+                    {/* Mobile Header Bar */}
+                    <div className="lg:hidden flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0a0d0a]/60 backdrop-blur-md relative z-30">
+                        <button
+                            type="button"
+                            onClick={() => setSidebarOpen(true)}
+                            className="p-2 bg-white/5 border border-white/10 rounded-xl text-gray-300 hover:text-white cursor-pointer"
+                        >
+                            <Menu size={18} />
+                        </button>
+                        <span className="text-xs font-black tracking-widest text-[#b0f020]">FITSPHERE AI COACH</span>
+                        <button
+                            type="button"
+                            onClick={handleNewConversation}
+                            className="p-2 bg-[#b0f020]/10 border border-[#b0f020]/20 rounded-xl text-[#b0f020] cursor-pointer"
+                        >
+                            <Plus size={18} />
+                        </button>
+                    </div>
 
                     {/* Messages Container */}
                     <div className="flex-1 overflow-y-auto p-6 md:px-8 md:py-8 space-y-10 scrollbar-hide">
