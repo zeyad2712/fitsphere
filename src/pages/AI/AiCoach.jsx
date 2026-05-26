@@ -11,9 +11,12 @@ import {
     Mic,
     Settings,
     MoreVertical,
-    Activity
+    Activity,
+    Copy,
+    Check
 } from 'lucide-react';
 import Navbar from '../../components/Navbar';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const AiCoach = () => {
     const [messages, setMessages] = useState([
@@ -25,7 +28,16 @@ const AiCoach = () => {
     ]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [copiedIndex, setCopiedIndex] = useState(null);
     const messagesEndRef = useRef(null);
+
+    const handleCopy = (text, index) => {
+        navigator.clipboard.writeText(text);
+        setCopiedIndex(index);
+        setTimeout(() => {
+            setCopiedIndex(null);
+        }, 2000);
+    };
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -35,46 +47,91 @@ const AiCoach = () => {
         scrollToBottom();
     }, [messages, isTyping]);
 
-    const handleSend = (e) => {
-        e.preventDefault();
-        if (!input.trim()) return;
+    const sendMessage = async (userText) => {
+        if (!userText.trim() || isTyping) return;
 
         const userMessage = {
             role: 'user',
-            content: input,
+            content: userText,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
 
         setMessages(prev => [...prev, userMessage]);
-        setInput('');
         setIsTyping(true);
 
-        setTimeout(() => {
+        try {
+            const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+            if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
+                throw new Error("API Key not configured. Please add your VITE_GEMINI_API_KEY in the .env file at the project root.");
+            }
+
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const modelName = import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash";
+            const model = genAI.getGenerativeModel({ 
+                model: modelName,
+                systemInstruction: "You are the FitSphere AI Coach, a highly professional, motivational, and scientific athletic trainer & nutritionist. Provide concise, actionable, and scientifically backed workout plans, nutrition advice, and motivational guidance. Keep formatting clean with bullet points where appropriate."
+            });
+
+            // Map history for Gemini API
+            const contents = messages.map(msg => ({
+                role: msg.role === 'assistant' ? 'model' : 'user',
+                parts: [{ text: msg.content }]
+            }));
+            
+            contents.push({
+                role: 'user',
+                parts: [{ text: userText }]
+            });
+
+            const result = await model.generateContent({ contents });
+            const response = await result.response;
+            const responseText = response.text();
+
             const botResponse = {
                 role: 'assistant',
-                content: generateAiResponse(input),
+                content: responseText,
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
             setMessages(prev => [...prev, botResponse]);
+        } catch (error) {
+            console.error("Gemini API Error:", error);
+            const botResponse = {
+                role: 'assistant',
+                content: error.message.includes("API Key not configured") 
+                    ? "⚠️ **API Key Missing**: Please set up your `VITE_GEMINI_API_KEY` in the `.env` file at the root of your project directory (`E:\\FitSphere\\fitshpere\\.env`) to enable the real AI coach responses."
+                    : "Sorry, I encountered an error while processing your request. Please check your API key and network connection. Details: " + error.message,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            setMessages(prev => [...prev, botResponse]);
+        } finally {
             setIsTyping(false);
-        }, 1500);
+        }
     };
 
-    const generateAiResponse = (query) => {
-        const q = query.toLowerCase();
-        if (q.includes('leg') || q.includes('workout')) {
-            return "Analysis complete. Based on your current VO2 Max and recovery metrics, I recommend 4 sets of Barbell Squats (85% 1RM) followed by 3 sets of Bulgarian Split Squats. Focus on explosive concentric movements.";
-        }
-        if (q.includes('diet') || q.includes('eat') || q.includes('protein')) {
-            return "Processing nutritional data... Aim for 2.0g of protein per kg of body mass today. Incorporate complex carbohydrates like sweet potatoes 2 hours pre-workout to maximize glycogen stores.";
-        }
-        return "Acknowledged. I'm analyzing your performance data to provide the best recommendation. Could you clarify if you're prioritizing metabolic conditioning or maximum strength today?";
+    const handleSend = async (e) => {
+        e.preventDefault();
+        if (!input.trim()) return;
+        const text = input;
+        setInput('');
+        await sendMessage(text);
+    };
+
+    const handleNewConversation = () => {
+        setMessages([
+            {
+                role: 'assistant',
+                content: "Hello! I'm your FitSphere AI Coach. How can I help you optimize your training today?",
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }
+        ]);
+        setInput('');
+        setIsTyping(false);
     };
 
     const history = [
-        { title: "Leg Day Optimization", date: "Today" },
+        { title: "Leg Day Workout", date: "Today" },
         { title: "Keto Meal Planning", date: "Yesterday" },
-        { title: "Running Form Analysis", date: "2 days ago" },
+        { title: "Low Carb, High Protein Diet", date: "2 days ago" },
         { title: "Upper Body Split", date: "Jan 12" }
     ];
 
@@ -103,6 +160,107 @@ const AiCoach = () => {
     const inputAreaVariants = {
         initial: { y: 50, opacity: 0 },
         animate: { y: 0, opacity: 1, transition: { duration: 0.5, delay: 0.6 } }
+    };
+
+    const parseInlineStyles = (text) => {
+        const parts = [];
+        let currentIndex = 0;
+        const regex = /(\*\*.*?\*\*|`.*?`|⚠️)/g;
+        let match;
+        
+        while ((match = regex.exec(text)) !== null) {
+            const matchIndex = match.index;
+            if (matchIndex > currentIndex) {
+                parts.push(text.substring(currentIndex, matchIndex));
+            }
+            
+            const matchedText = match[0];
+            if (matchedText.startsWith('**') && matchedText.endsWith('**')) {
+                const innerText = matchedText.slice(2, -2);
+                parts.push(
+                    <strong key={matchIndex} className="text-white font-extrabold text-[#b0f020]/90">
+                        {innerText}
+                    </strong>
+                );
+            } else if (matchedText.startsWith('`') && matchedText.endsWith('`')) {
+                const innerText = matchedText.slice(1, -1);
+                parts.push(
+                    <code key={matchIndex} className="font-mono text-xs text-[#b0f020] bg-[#b0f020]/10 px-1.5 py-0.5 rounded border border-[#b0f020]/25">
+                        {innerText}
+                    </code>
+                );
+            } else if (matchedText === '⚠️') {
+                parts.push(
+                    <span key={matchIndex} className="inline-block animate-bounce mr-1">⚠️</span>
+                );
+            }
+            currentIndex = regex.lastIndex;
+        }
+        
+        if (currentIndex < text.length) {
+            parts.push(text.substring(currentIndex));
+        }
+        
+        return parts.length > 0 ? parts : text;
+    };
+
+    const formatResponse = (text) => {
+        if (!text) return null;
+        const lines = text.split('\n');
+        return (
+            <div className="space-y-2.5 text-sm md:text-base leading-[1.7] text-gray-200">
+                {lines.map((line, idx) => {
+                    const cleanLine = line.trim();
+                    if (!cleanLine) return <div key={idx} className="h-2" />;
+
+                    if (cleanLine.startsWith('###')) {
+                        return (
+                            <h4 key={idx} className="text-sm md:text-base font-extrabold text-white mt-4 mb-2 tracking-tight flex items-center gap-2 border-l-2 border-[#b0f020] pl-2.5">
+                                {parseInlineStyles(cleanLine.replace(/^###\s*/, ''))}
+                            </h4>
+                        );
+                    }
+                    if (cleanLine.startsWith('##') || cleanLine.startsWith('#')) {
+                        return (
+                            <h3 key={idx} className="text-base md:text-lg font-black text-[#b0f020] mt-5 mb-3 tracking-tight">
+                                {parseInlineStyles(cleanLine.replace(/^#+\s*/, ''))}
+                            </h3>
+                        );
+                    }
+
+                    if (cleanLine.startsWith('-') || cleanLine.startsWith('*')) {
+                        return (
+                            <div key={idx} className="flex items-start gap-2.5 pl-1 my-1 group/item">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#b0f020] mt-2 shadow-[0_0_8px_rgba(176,240,32,0.8)] group-hover/item:scale-125 transition-transform" />
+                                <span className="flex-1 text-gray-300">
+                                    {parseInlineStyles(cleanLine.substring(1).trim())}
+                                </span>
+                            </div>
+                        );
+                    }
+
+                    const numMatch = cleanLine.match(/^(\d+)\.\s+(.*)/);
+                    if (numMatch) {
+                        return (
+                            <div key={idx} className="flex items-start gap-2.5 pl-1 my-1">
+                                <span className="text-[10px] font-black text-[#b0f020] bg-[#b0f020]/10 px-1.5 py-0.5 rounded border border-[#b0f020]/20 min-w-[1.6rem] text-center">
+                                    {numMatch[1]}
+                                </span>
+                                <span className="flex-1 text-gray-300">
+                                    {parseInlineStyles(numMatch[2])}
+                                </span>
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <p key={idx} className="text-gray-300">
+                            {parseInlineStyles(cleanLine)}
+                        </p>
+                    );
+                })}
+            </div>
+        );
     };
 
     return (
@@ -153,6 +311,7 @@ const AiCoach = () => {
                     <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
+                        onClick={handleNewConversation}
                         className="flex items-center gap-2 w-full bg-[#b0f020] text-black font-bold py-3.5 px-4 rounded-xl hover:bg-[#9de018] transition-all mb-8 shadow-[0_10px_30px_rgba(176,240,32,0.15)]"
                     >
                         <Plus size={18} /> New Conversation
@@ -169,28 +328,43 @@ const AiCoach = () => {
                                         key={i}
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.5 + i * 0.1 }}
-                                        className="group flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 cursor-pointer transition-all border border-transparent hover:border-white/10"
+                                        whileHover={{ scale: 1.02, x: 4 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        transition={{ 
+                                            opacity: { delay: 0.5 + i * 0.1 },
+                                            x: { type: "spring", stiffness: 300, damping: 20 }
+                                        }}
+                                        className="group flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] hover:bg-white/5 border border-white/5 hover:border-[#b0f020]/20 cursor-pointer transition-all duration-300"
+                                        onClick={() => sendMessage(item.title ? `Give me a detailed plan for: ${item.title}` : "New chat session request")}
                                     >
                                         <div className="flex items-center gap-3 overflow-hidden">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-[#b0f020]/40 group-hover:bg-[#b0f020] transition-colors" />
-                                            <span className="text-sm font-medium text-gray-400 group-hover:text-white truncate transition-colors">{item.title}</span>
+                                            <div className="w-8 h-8 rounded-xl bg-[#b0f020]/5 flex items-center justify-center border border-[#b0f020]/15 group-hover:border-[#b0f020]/30 transition-colors">
+                                                <Activity size={14} className="text-[#b0f020]/60 group-hover:text-[#b0f020] transition-colors" />
+                                            </div>
+                                            <div className="flex flex-col min-w-0">
+                                                <span className="text-sm font-semibold text-gray-300 group-hover:text-white truncate transition-colors">
+                                                    {item.title || "Untitled Session"}
+                                                </span>
+                                                {/* <span className="text-[10px] text-gray-500 font-medium mt-0.5">
+                                                    {item.date}
+                                                </span> */}
+                                            </div>
                                         </div>
-                                        <MoreVertical size={14} className="text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <MoreVertical size={14} className="text-gray-500 hover:text-white opacity-0 group-hover:opacity-100 transition-all cursor-pointer" />
                                     </motion.div>
                                 ))}
                             </div>
                         </div>
                     </div>
 
-                    <div className="pt-6 border-t border-white/5 space-y-1">
+                    {/* <div className="pt-6 border-t border-white/5 space-y-1">
                         <div className="flex items-center gap-3 p-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl cursor-pointer transition-all">
                             <Settings size={18} /> <span className="text-sm font-medium">Settings</span>
                         </div>
                         <div className="flex items-center gap-3 p-3 text-red-400/60 hover:text-red-400 hover:bg-red-400/5 rounded-xl cursor-pointer transition-all">
                             <Trash2 size={18} /> <span className="text-sm font-medium">Delete Chats</span>
                         </div>
-                    </div>
+                    </div> */}
                 </motion.aside>
 
                 {/* Main Chat Area */}
@@ -199,7 +373,7 @@ const AiCoach = () => {
                     className="flex-1 flex flex-col relative"
                 >
                     {/* Chat Header */}
-                    <motion.header
+                    {/* <motion.header
                         variants={headerVariants}
                         className="flex items-center justify-between px-8 py-5 border-b border-white/5 bg-[#0a0d0a]/40 backdrop-blur-5xl"
                     >
@@ -228,10 +402,10 @@ const AiCoach = () => {
                                 </div>
                             </div>
                         </div>
-                    </motion.header>
+                    </motion.header> */}
 
                     {/* Messages Container */}
-                    <div className="flex-1 overflow-y-auto p-6 md:px-12 md:py-8 space-y-10 scrollbar-hide">
+                    <div className="flex-1 overflow-y-auto p-6 md:px-8 md:py-8 space-y-10 scrollbar-hide">
                         <AnimatePresence initial={false}>
                             {messages.map((msg, i) => (
                                 <motion.div
@@ -260,9 +434,30 @@ const AiCoach = () => {
                                                         className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-transparent via-[#b0f020]/5 to-transparent skew-x-12"
                                                     />
                                                 )}
-                                                {msg.content}
+                                                {formatResponse(msg.content)}
                                             </div>
-                                            <span className="text-[10px] text-gray-600 font-black tracking-widest px-2">{msg.time}</span>
+                                            <div className="flex items-center gap-3 px-2 mt-1 select-none">
+                                                <span className="text-[10px] text-gray-600 font-black tracking-widest">{msg.time}</span>
+                                                {msg.role === 'assistant' && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleCopy(msg.content, i)}
+                                                        className="flex items-center gap-1.5 text-[10px] font-black tracking-widest text-gray-600 hover:text-[#b0f020] transition-colors cursor-pointer uppercase"
+                                                    >
+                                                        {copiedIndex === i ? (
+                                                            <>
+                                                                <Check size={10} className="text-[#b0f020]" />
+                                                                <span className="text-[#b0f020]">COPIED</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Copy size={10} />
+                                                                <span>COPY RESPONSE</span>
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -304,7 +499,7 @@ const AiCoach = () => {
                     {/* Input Area */}
                     <motion.div
                         variants={inputAreaVariants}
-                        className="p-6 md:p-12 pt-0"
+                        className="p-2 md:p-4 pt-0"
                     >
                         <form
                             onSubmit={handleSend}
@@ -312,13 +507,13 @@ const AiCoach = () => {
                         >
                             <div className="absolute inset-0 bg-[#b0f020]/10 blur-3xl rounded-full opacity-0 group-focus-within:opacity-100 transition-opacity duration-700"></div>
                             <div className="relative bg-[#111611]/80 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-3 flex items-center gap-3 group-focus-within:border-[#b0f020]/30 transition-all duration-500 shadow-2xl">
-                                <motion.button
+                                {/* <motion.button
                                     whileHover={{ rotate: 90 }}
                                     type="button"
                                     className="p-3 text-gray-500 hover:text-[#b0f020] transition-colors"
                                 >
                                     <Plus size={22} />
-                                </motion.button>
+                                </motion.button> */}
                                 <input
                                     type="text"
                                     value={input}
@@ -327,20 +522,27 @@ const AiCoach = () => {
                                     className="flex-1 bg-transparent border-none outline-none py-4 px-2 text-sm md:text-base font-medium placeholder:text-gray-700 tracking-tight"
                                 />
                                 <div className="flex items-center gap-2 pr-2">
-                                    <button type="button" className="hidden md:flex p-3 text-gray-600 hover:text-[#b0f020] transition-all">
+                                    {/* <button type="button" className="hidden md:flex p-3 text-gray-600 hover:text-[#b0f020] transition-all">
                                         <Mic size={20} />
-                                    </button>
+                                    </button> */}
                                     <motion.button
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
+                                        whileHover={input.trim() ? { scale: 1.05, y: -1 } : {}}
+                                        whileTap={input.trim() ? { scale: 0.95 } : {}}
                                         type="submit"
                                         disabled={!input.trim()}
-                                        className={`p-4 rounded-2xl transition-all ${input.trim()
-                                            ? 'bg-[#b0f020] text-black shadow-[0_0_30px_rgba(176,240,32,0.4)]'
-                                            : 'bg-white/5 text-gray-800 cursor-not-allowed opacity-50'
+                                        className={`group p-4 rounded-2xl transition-all duration-300 flex items-center justify-center relative overflow-hidden ${input.trim()
+                                            ? 'bg-gradient-to-tr from-[#b0f020] to-[#d4ff6b] text-black shadow-[0_0_25px_rgba(176,240,32,0.45)] border border-[#b0f020]/20 cursor-pointer'
+                                            : 'bg-white/[0.03] text-gray-600 border border-white/5 cursor-not-allowed'
                                             }`}
                                     >
-                                        <Send size={18} />
+                                        <Send 
+                                            size={18} 
+                                            className={`transition-all duration-300 ${
+                                                input.trim() 
+                                                    ? 'group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-black' 
+                                                    : ''
+                                            }`} 
+                                        />
                                     </motion.button>
                                 </div>
                             </div>

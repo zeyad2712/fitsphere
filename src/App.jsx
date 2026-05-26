@@ -2,6 +2,7 @@ import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ChevronUp, MessageSquare, X, Send, Bot, Dumbbell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Lazy load pages
 const Home = lazy(() => import('./pages/Home'));
@@ -119,23 +120,64 @@ const ChatBot = () => {
         { id: 1, text: "Hey there! 👋 I'm your FitSphere AI. How can I help you crush your goals today?", isBot: true }
     ]);
     const [inputValue, setInputValue] = useState("");
+    const [isTyping, setIsTyping] = useState(false);
 
-    const handleSend = (e) => {
+    const handleSend = async (e) => {
         e.preventDefault();
         if (!inputValue.trim()) return;
 
-        const newUserMsg = { id: Date.now(), text: inputValue, isBot: false };
+        const userText = inputValue;
+        const newUserMsg = { id: Date.now(), text: userText, isBot: false };
         setMessages(prev => [...prev, newUserMsg]);
         setInputValue("");
+        setIsTyping(true);
 
-        // Mock bot response
-        setTimeout(() => {
+        try {
+            const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+            if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
+                throw new Error("API Key not configured. Please add your VITE_GEMINI_API_KEY in the .env file at the project root.");
+            }
+
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const modelName = import.meta.env.VITE_GEMINI_MODEL || "gemini-2.5-flash";
+            const model = genAI.getGenerativeModel({ 
+                model: modelName,
+                systemInstruction: "You are FitSphere AI, a friendly and helpful assistant embedded in the FitSphere fitness portal. Answer user questions about workouts, fitness packages, gyms, and healthy living briefly and engagingly."
+            });
+
+            // Map history for Gemini API
+            const contents = messages.map(msg => ({
+                role: msg.isBot ? 'model' : 'user',
+                parts: [{ text: msg.text }]
+            }));
+            
+            contents.push({
+                role: 'user',
+                parts: [{ text: userText }]
+            });
+
+            const result = await model.generateContent({ contents });
+            const response = await result.response;
+            const responseText = response.text();
+
             setMessages(prev => [...prev, {
                 id: Date.now() + 1,
-                text: "That's a great question! I'm currently in training mode, but soon I'll be able to track your macros and suggest workouts perfectly.",
+                text: responseText,
                 isBot: true
             }]);
-        }, 1000);
+        } catch (error) {
+            console.error("Gemini API Error:", error);
+            const errorMsg = error.message.includes("API Key not configured")
+                ? "⚠️ API Key Missing: Please add your VITE_GEMINI_API_KEY to the .env file at the project root."
+                : "Sorry, I ran into an error. Please try again later. Details: " + error.message;
+            setMessages(prev => [...prev, {
+                id: Date.now() + 1,
+                text: errorMsg,
+                isBot: true
+            }]);
+        } finally {
+            setIsTyping(false);
+        }
     };
 
     return (
@@ -176,6 +218,15 @@ const ChatBot = () => {
                                     </div>
                                 </div>
                             ))}
+                            {isTyping && (
+                                <div className="flex justify-start">
+                                    <div className="bg-[#1c221c] text-gray-300 rounded-2xl rounded-tl-none border border-white/5 p-3 flex gap-1 items-center">
+                                        <span className="w-1.5 h-1.5 bg-[#b0f020] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                        <span className="w-1.5 h-1.5 bg-[#b0f020] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                        <span className="w-1.5 h-1.5 bg-[#b0f020] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Input Area */}
