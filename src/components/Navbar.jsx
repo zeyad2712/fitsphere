@@ -63,9 +63,9 @@ const Navbar = () => {
               <User size={18} />Profile
             </Link>
           )}
-          <Link to="/profile" className="bg-[#b0f020] text-[#0f120f] px-4 py-2 rounded-full font-bold hover:bg-[#9de018] hover:shadow-[0_0_15px_rgba(176,240,32,0.4)] transition-all transform hover:-translate-y-0.5 text-sm flex items-center gap-2">
+          {/* <Link to="/profile" className="bg-[#b0f020] text-[#0f120f] px-4 py-2 rounded-full font-bold hover:bg-[#9de018] hover:shadow-[0_0_15px_rgba(176,240,32,0.4)] transition-all transform hover:-translate-y-0.5 text-sm flex items-center gap-2">
             <User size={18} />Profile
-          </Link>
+          </Link> */}
         </div>
 
         {/* Mobile menu toggle */}
@@ -95,7 +95,7 @@ const Navbar = () => {
           <div className="flex flex-col gap-2 pt-4 border-t border-[#2a2f2a]">
             <Link to="/login" className="w-full text-center py-2 text-white hover:text-[#b0f020] font-medium" onClick={() => setMobileMenuOpen(false)}>Log in</Link>
             <Link to="/signup" className="w-full text-center py-2 bg-[#b0f020] text-[#0f120f] rounded-lg font-bold" onClick={() => setMobileMenuOpen(false)}>Sign up</Link>
-            <Link to="/profile" className="w-full flex items-center justify-center gap-2 py-2 bg-[#b0f020] text-[#0f120f] rounded-lg font-bold" onClick={() => setMobileMenuOpen(false)}><User size={18} />Profile</Link>
+            {/* <Link to="/profile" className="w-full flex items-center justify-center gap-2 py-2 bg-[#b0f020] text-[#0f120f] rounded-lg font-bold" onClick={() => setMobileMenuOpen(false)}><User size={18} />Profile</Link> */}
           </div>
         </motion.div>
       )}
